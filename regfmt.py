@@ -4,14 +4,12 @@
 
 import os
 import sys
-import getopt
 
 from regfmtlib.CommandLineParser import CommandLineParser
 from regfmtlib import InputLoadAndValidate
 
 VERSION = '1.0.0'
 
-        
 class RegisterFormat:
     def __init__(self, parsedArguments):
         self.version = VERSION
