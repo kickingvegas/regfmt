@@ -1,0 +1,160 @@
+* regfmt
+
+Command line utility to render to SVG a data register with multiple bit fields specified. This utility is inspired by the ~troff~ tool ~dformat~.
+
+This project is a *work in progress*.
+
+* Configuration File Schema
+
+** Top Level
+| Property  | Type                    | Description                                                       |
+|-----------+-------------------------+-------------------------------------------------------------------|
+|           |                         | <40>                                                              |
+| width     | Int                     | Global register bit width. If not specified, default value is ~32~. |
+| registers | ~Register~[1..N]{ordered} | Array of ~Register~ instances.                                      |
+| style     | ~Style~                   | Style instance                                                    |
+
+** Register
+| Property     | Type                 | Description                                          |
+|--------------+----------------------+------------------------------------------------------|
+|              |                      | <40>                                                 |
+| name         | String               | Register name.                                       |
+| width        | Int                  | Register bit width. Overrides top level ~width~ value. |
+| layout-order | ~LayoutOrder~          | Field layout order.                                  |
+| fields       | Field[1..N]{ordered} | Array of ~Field~ instances.                            |
+
+** LayoutOrder
+| Values          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|-----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                 | <60>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| memory          | Interpret the element order of ~Register.fields~ such that the first element has the least significant bit (/lsb/) of the register and the last element has the most significant bit (/msb/) of the register. When rendered, the first element will be placed /right-most/ and the last element placed /left-most/. Within a field, bit ordering always renders the /msb/ index on the left and the /lsb/ on the right. If the field is only one bit long, then the bit index is rendered in the center. |
+| transmit-big    | Interpret the element order of ~Register.fields~ such that the first element contains the /msb/ of the data payload and the last element contains the /lsb/.                                                                                                                                                                                                                                                                                                                                    |
+| transmit-little | Interpret the element order of ~Register.fields~ such that the first element contains the /lsb/ of the data payload and the last element contains the /msb/.                                                                                                                                                                                                                                                                                                                                    |
+
+** BitOrder
+String enum value to describe the layout order of a bit field.
+| Values   | Description                                                              |
+|----------+--------------------------------------------------------------------------|
+| msb..lsb | Render most significant bit on the left, least significant bit on right. |
+| lsb..msb | Render least significant bit on the left, most significant bit on right. |
+
+** Field
+| Property | Type   | Description           |
+|----------+--------+-----------------------|
+| name     | String | Field name.           |
+| width    | Int    | ~Register~ field width. |
+
+** Style
+| Property       | Type            | Description |
+|----------------+-----------------+-------------|
+| font-family    | CSS Font Family |             |
+| font-size      | CSS Font Size   |             |
+| font-color     | CSS Font Color  |             |
+| stroke         |                 |             |
+| stroke-width   |                 |             |
+| stroke-linecap |                 |             |
+| field-layout   | ~FieldLayout~     |             |
+
+** FieldLayout
+
+| Values | Description                                                       |
+|--------+-------------------------------------------------------------------|
+| left   | Render left bit field value only.                                 |
+| right  | Render right bit field value only.                                |
+| both   | Render both. (Default)                                            |
+| none   | Do not render any bit field value. Can also specify a ~null~ value. |
+ 
+* Punchlist [0/4]
+- [-] Define Configuration Schema
+  - [-] Register Definition
+  - [ ] Style Definition
+- [ ] Process configuration file 
+  - [ ] Validate Configuration
+  - [ ] DRC configuration
+- [ ] SVG Rendering
+- [ ] Tests
+
+https://stackoverflow.com/questions/65721909/how-to-get-bounding-box-coordinates-around-entire-text
+
+https://github.com/python-pillow/Pillow/issues/3921
+
+#+begin_src
+from PIL import ImageFont
+f2 = ImageFont.truetype('Futura.ttc', 12)
+>>> f2.getsize('M')
+(12, 14)
+
+>>> 28.0 / 72
+0.3888888888888889
+>>> 0.3888888888888889
+0.3888888888888889
+>>> 14.0/72
+0.19444444444444445
+>>>   
+#+end_src
+
+https://stackoverflow.com/questions/15356641/how-to-write-xml-declaration-using-xml-etree-elementtree
+
+tinycss2 is a CSS parser.
+
+Fuck you really want to define a netlist.
+
+#+begin_src python
+  class BaseField: 
+      def __init__(self):
+          self.name = 'string'
+          self.width = 'int'
+
+  class Field: BaseField
+      def __init__(self):
+          pass
+
+  class Register: BaseField
+      def __init__(self):
+          self.direction = 
+          self.fields = [field]
+          
+#+end_src
+
+
+#+begin_src yaml
+  width: 64
+  registers: 
+    - name: TEQ
+      width: 32
+      endian: littleByte
+      fields:
+        - name: TEQ
+          width: 6
+
+        - name: code
+          width: 10
+
+        - name: rt
+          width: 5
+
+        - name: rs
+          width: 5
+
+        - name: SPECIAL
+          width: 6
+
+          
+
+  netlist:
+    - layout: col2, tb, bt, lr, rl
+      registers:
+        - TEQ
+        - mary
+
+#+end_src
+  
+* References
+ - https://json-schema.org/understanding-json-schema/reference/numeric.html
+ - https://json-schema.org/learn/miscellaneous-examples.html
+ - https://python-jsonschema.readthedocs.io/en/stable/
+ - https://stackoverflow.com/questions/3262569/validating-a-yaml-document-in-python
+ - https://python-jsonschema.readthedocs.io/en/latest/api/jsonschema/validators/#jsonschema.validators.Draft202012Validator
+ - https://python-jsonschema.readthedocs.io/en/latest/
+ - https://pynative.com/python-json-validation/
+ - http://donofden.com/blog/2020/03/15/How-to-Validate-JSON-Schema-using-Python
