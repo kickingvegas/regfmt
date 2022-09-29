@@ -28,11 +28,24 @@ class RegisterFormat:
         if parsedArguments.output != '-':
             outfile = open('{0}'.format(parsedArguments.output), 'w')
             self.stdout = outfile
+
+        if not os.path.exists(parsedArguments.input):
+            sys.stderr.write('ERROR: file "{0}" does not exist. Please specify an input file.\n'.format(parsedArguments.input))
+            sys.exit(1)
                     
     def run(self):
 
-        InputLoadAndValidate(self.parsedArguments)
+        # Load and validate input YAML
+        loader = InputLoadAndValidate(self.parsedArguments)
+        inputYAML = loader.loadAndValidate()
+        print(inputYAML)
         
+        # DRC Check input YAML
+
+        # Deserialize input YAML into native objects
+
+        # Render SVG
+                        
 
         # wrap up 
         if self.stdout != sys.stdout:

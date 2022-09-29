@@ -86,8 +86,10 @@ $defs:
 class InputLoadAndValidate:
     def __init__(self, parsedArguments):
         self.parsedArguments = parsedArguments
-        inputYAML = self.loadInput()
-        schemaYAML = self.loadInputSchema()
+
+    def loadAndValidate(self):
+        inputYAML = self.loadInput(self.parsedArguments)
+        schemaYAML = self.loadInputSchema(INPUT_SCHEMA_YAML)
 
         try:
             result = validate(inputYAML, schemaYAML)
@@ -109,10 +111,11 @@ class InputLoadAndValidate:
             print(err.validator)
             print(err.schema_path)
             print(dir(err))
-        
 
-    def loadInput(self):
-        with open(self.parsedArguments.input, 'r') as infile:
+        return inputYAML
+        
+    def loadInput(self, parsedArguments):
+        with open(parsedArguments.input, 'r') as infile:
             try:
                 yamlConfig = load(infile, Loader=Loader)
             except ScannerError as err:
@@ -122,9 +125,9 @@ class InputLoadAndValidate:
         return yamlConfig
 
     
-    def loadInputSchema(self):
+    def loadInputSchema(self, schemaString):
         try:
-            yamlConfig = safe_load(INPUT_SCHEMA_YAML)
+            yamlConfig = safe_load(schemaString)
         except ScannerError as err:
             sys.stderr.write('ERROR: {0}\n'.format(err))
             sys.exit(1)
