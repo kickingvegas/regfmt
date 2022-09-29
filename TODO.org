@@ -1,15 +1,12 @@
 * regfmt Todo Punchlist
-** IN_PROGRESS Define regfmt configuration schema
-** TODO Define regfmt style configuration schema
-** TODO Implement regfmt configuration file processing
-** TODO Implement validation check
+** DONE Define regfmt configuration schema
+CLOSED: [2022-09-29 Thu 13:54]
+** DONE Implement regfmt configuration file processing
+CLOSED: [2022-09-29 Thu 13:54]
+** DONE Implement validation check
+CLOSED: [2022-09-29 Thu 13:54]
+** DONE Write regfmt test framework
+CLOSED: [2022-09-29 Thu 13:55]
 ** TODO Implement DRC check
 ** TODO Implement SVG Renderer
-** TODO Write regfmt test framework
-
-
-
-
-
-
-
+** TODO Define regfmt style configuration schema
