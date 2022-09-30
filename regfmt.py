@@ -42,7 +42,7 @@ class RegisterFormat:
         registerDB = TopLevel(config=inputYAML)
 
         # DRC Check native object DB
-        
+
 
 
         # Render SVG
