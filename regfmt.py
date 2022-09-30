@@ -46,8 +46,6 @@ class RegisterFormat:
         drcChecker.check(registerDB)
         drcChecker.subIndexFields(registerDB)
 
-
-
         # Render SVG
 
         # wrap up 
