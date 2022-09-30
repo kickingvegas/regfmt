@@ -4,13 +4,12 @@
 
 import os
 import sys
-
 from regfmtlib.CommandLineParser import CommandLineParser
 from regfmtlib.InputLoadAndValidate import InputLoadAndValidate
 from regfmtlib.TopLevel import TopLevel
 from regfmtlib.DRCChecker import DRCChecker
 
-VERSION = '1.0.0'
+VERSION = '0.1.0'
 
 class RegisterFormat:
     def __init__(self, parsedArguments):

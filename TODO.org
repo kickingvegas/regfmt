@@ -12,3 +12,6 @@ CLOSED: [2022-09-29 Thu 18:15]
 ** TODO Implement DRC check
 ** TODO Implement SVG Renderer
 ** TODO Define regfmt style configuration schema
+** TODO Add license
+
+

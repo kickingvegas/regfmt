@@ -11,7 +11,11 @@ class DRCChecker:
         self.foo = None
         self.errors = []
 
+
     def check(self, registerDB: TopLevel):
+        self.checkFieldWidths(registerDB)
+
+    def checkFieldWidths(self, registerDB: TopLevel):
         registers: [Register] = registerDB.registers
 
         for register in registers:
@@ -29,6 +33,9 @@ class DRCChecker:
 
         return self.errors
 
+    # TODO: check that field names do not repeat
+    # TODO: check that fields are byte-sized for bigByte and littleByte
+
     def subIndexFields(self, registerDB: TopLevel):
         registers: [Register] = registerDB.registers
 
@@ -41,27 +48,26 @@ class DRCChecker:
             fields: [Field] = register.fields
 
             for field in fields:
-                if endian == Endian.bigBit.value:
+                if endian in (Endian.bigBit.value, Endian.bigByte.value):
                     count -= 1
-                    leftIndex = count
+                    field.leftIndex = count
                     count -= (field.width - 1)
-                    rightIndex = count
-                    print('{0}:{1} {2}'.format(leftIndex, rightIndex, field.name))
+                    field.rightIndex = count
+                    print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
                 elif endian == Endian.littleBit.value:
                     count += 1
-                    leftIndex = count
+                    field.leftIndex = count
                     count += (field.width - 1)
-                    rightIndex = count
-                    print('{0}:{1} {2}'.format(leftIndex, rightIndex, field.name))
+                    field.rightIndex = count
+                    print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
                 elif endian == Endian.littleByte.value:
                     count += 1
-                    rightIndex = count
+                    field.rightIndex = count
                     count += (field.width - 1)
-                    leftIndex = count
-                    print('{0}:{1} {2}'.format(leftIndex, rightIndex, field.name))
-
+                    field.leftIndex = count
+                    print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
             print('###')
 
