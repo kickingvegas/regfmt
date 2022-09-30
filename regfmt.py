@@ -6,7 +6,8 @@ import os
 import sys
 
 from regfmtlib.CommandLineParser import CommandLineParser
-from regfmtlib import InputLoadAndValidate
+from regfmtlib.InputLoadAndValidate import InputLoadAndValidate
+from regfmtlib.TopLevel import TopLevel
 
 VERSION = '1.0.0'
 
@@ -32,18 +33,19 @@ class RegisterFormat:
             sys.exit(1)
                     
     def run(self):
-
         # Load and validate input YAML
         loader = InputLoadAndValidate(self.parsedArguments)
         inputYAML = loader.loadAndValidate()
         print(inputYAML)
         
-        # DRC Check input YAML
+        # Deserialize input YAML into native object DB
+        registerDB = TopLevel(config=inputYAML)
 
-        # Deserialize input YAML into native objects
+        # DRC Check native object DB
+        
+
 
         # Render SVG
-                        
 
         # wrap up 
         if self.stdout != sys.stdout:

@@ -1,5 +1,5 @@
 import unittest
-from regfmtlib.ConfigurationFactory import Endian
+from regfmtlib import Endian
 
 class TestEndian(unittest.TestCase):
     def test_littleByte(self):
@@ -13,7 +13,6 @@ class TestEndian(unittest.TestCase):
 
     def test_bigBit(self):
         self.assertEqual(Endian.bigBit.value, "bigBit")
-
 
 if __name__ == '__main__':
     unittest.main()
