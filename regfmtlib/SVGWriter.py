@@ -6,6 +6,30 @@ from PIL import ImageFont
 
 BASE_FONT_SIZE = 12
 
+def bboxLength(bbox):
+    return (bbox[2] - bbox[0])
+
+def bboxHeight(bbox):
+    return (bbox[3] - bbox[1])
+
+def matrixMult(X, Y):
+    result = [[sum(a*b for a,b in zip(X_row,Y_col)) for Y_col in zip(*Y)] for X_row in X]
+    return result
+
+def translateTransform(x, y):
+    result = [[1.0, 0.0, x],
+              [0.0, 1.0, y],
+              [0.0, 0.0, 1.0]]
+    return result
+
+def vector2D(x, y):
+    result = [[x], [y], [1.0]]
+    return result
+
+def coordinateFromVector2D(V):
+    result = (V[0][0], V[1][0])
+    return result
+
 class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile):
         self.registerDB = registerDB
@@ -25,18 +49,84 @@ class SVGWriter:
         #self.writeScratch()
 
         doc, topElement = self.createDocument()
+
+        children = []
         
         # append all new nodes to topElement
-        field0 = self.writeRect(doc, x=0, y=0, width=100, height=50, stroke='black')
-        field1 = self.writeRect(doc, x=100, y=0, width=100, height=50, stroke='black')
-        text0 = self.writeText(doc, "A1", x='0', y='0.5in')
+        # field0 = self.writeRect(doc, x=0, y=0, width=100, height=50, stroke='black')
+        # field1 = self.writeRect(doc, x=100, y=0, width=100, height=50, stroke='black')
+        # text0 = self.writeText(doc, "A1", x='0', y='0.5in')
+        # children = [field0, field1, text0]
+        registers: [Register] = self.registerDB.registers
+        registerNames: [string] = [register.name for register in registers]
 
-        children = [field0, field1, text0]
+        cx = self.font.getlength('M') * 3
+        cBbox = self.font.getbbox('M', anchor='lt')
+
+
+        cx = bboxLength(cBbox) * 3
+        cy = bboxHeight(cBbox) * 4
+
+        for register in registers:
+            registerWidth = register.width * cx
+            registerHeight = cy
+
+            displacement = 0
+            for field in register.fields:
+                fieldWidth = field.width * cx
+                fieldHeight = registerHeight
+
+                fieldX = 0
+                fieldY = 0
+
+                #print((fieldX, fieldY, fieldWidth, fieldHeight), field.name)
+
+                T = translateTransform(displacement, 0)
+                V = vector2D(fieldX, fieldY)
+
+                tranformedV = matrixMult(T, V)
+                #print(coordinateFromVector2D(tranformedV), (fieldWidth, fieldHeight))
+                # self.renderField(field)
+
+                fieldX, fieldY = coordinateFromVector2D(tranformedV)
+
+                children.append(self.writeRect(doc,
+                                               x=fieldX,
+                                               y=fieldY,
+                                               width=fieldWidth,
+                                               height=fieldHeight,
+                                               strokeWidth="0.1"))
+
+                # write field name
+
+                fieldNameBbox = self.font.getbbox(field.name, anchor='la')
+                fieldNameHeight = bboxHeight(fieldNameBbox)
+                fieldNameWidth = bboxLength(fieldNameBbox)
+
+                #print(fieldNameBbox)
+
+                fieldNameX = fieldNameBbox[0] + displacement
+                # cheat? need to know what the actual bounding box is here.
+                fieldNameY = fieldNameBbox[3] + 0
+
+                #print(fieldNameX, fieldNameY)
+
+                e = self.writeText(doc,
+                                   field.name,
+                                   x=str(fieldNameX),
+                                   y=str(fieldNameY))
+
+                children.append(e)
+
+                displacement += fieldWidth
+            break
+
+        self.renderSVG(doc, topElement, children, self.outfile)
+
+    def renderSVG(self, doc, topElement, children, outfile):
         for child in children:
             topElement.appendChild(child)
-
-        doc.writexml(self.outfile, encoding='utf-8', addindent = "  ", newl="\n")
-        
+        doc.writexml(self.outfile, encoding='utf-8', addindent="  ", newl="\n")
 
     def writeScratch(self):
         self.outfile.write('hey they clittiak\n')
@@ -57,6 +147,7 @@ class SVGWriter:
                 bbox = self.font.getbbox(name)
                 length = self.font.getlength(name)
                 print(name, bbox, length)
+
         
 
     def writeRect(self,
@@ -86,7 +177,7 @@ class SVGWriter:
                   x="0",
                   y="0",
                   fontSize="12pt",
-                  fontFamily="Futura, Helvetica, sans-serif",
+                  fontFamily="Helvetica, Futura, sans-serif",
                   textAnchor="left",
                   fill="blue"):
         # x, y are the lower left baseline of the text

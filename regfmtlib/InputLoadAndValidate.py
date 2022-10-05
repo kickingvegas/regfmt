@@ -123,7 +123,6 @@ class InputLoadAndValidate:
 
         return yamlConfig
 
-    
     def loadInputSchema(self, schemaString):
         try:
             yamlConfig = safe_load(schemaString)

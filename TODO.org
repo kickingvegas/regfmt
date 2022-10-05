@@ -10,7 +10,7 @@ CLOSED: [2022-09-29 Thu 13:55]
 ** DONE Implement Deserialize input YAML to native object DB
 CLOSED: [2022-09-29 Thu 18:15]
 ** IN_PROGRESS Implement DRC check
-** TODO Implement SVG Renderer
+** IN_PROGRESS Implement SVG Renderer
 *** TODO Define regfmt style configuration schema
 ** TODO Add license
 
