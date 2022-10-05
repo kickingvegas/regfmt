@@ -6,3 +6,4 @@ from .Register import Register
 from .Field import Field
 from .Constants import Constants
 from .DRCChecker import DRCChecker
+from .SVGWriter import SVGWriter

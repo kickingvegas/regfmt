@@ -93,11 +93,10 @@ class InputLoadAndValidate:
 
         try:
             result = validate(inputYAML, schemaYAML)
-            if result is None:
-                print("yaml validated")
-            else:
+            if result is not None:
                 # this should never happen
-                print('wtf')
+                sys.stderr.write('ERROR: unexpected result from validate()\n')
+                sys.exit(1)
 
         except exceptions.ValidationError as err:
             print(err.json_path)

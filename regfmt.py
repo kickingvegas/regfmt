@@ -8,6 +8,7 @@ from regfmtlib.CommandLineParser import CommandLineParser
 from regfmtlib.InputLoadAndValidate import InputLoadAndValidate
 from regfmtlib.TopLevel import TopLevel
 from regfmtlib.DRCChecker import DRCChecker
+from regfmtlib.SVGWriter import SVGWriter
 
 VERSION = '0.1.0'
 
@@ -36,7 +37,7 @@ class RegisterFormat:
         # Load and validate input YAML
         loader = InputLoadAndValidate(self.parsedArguments)
         inputYAML = loader.loadAndValidate()
-        print(inputYAML)
+        #print(inputYAML)
         
         # Deserialize input YAML into native object DB
         registerDB = TopLevel(config=inputYAML)
@@ -47,6 +48,10 @@ class RegisterFormat:
         drcChecker.subIndexFields(registerDB)
 
         # Render SVG
+        svgWriter = SVGWriter(registerDB, self.stdout)
+        svgWriter.writeSVG()
+
+
 
         # wrap up 
         if self.stdout != sys.stdout:

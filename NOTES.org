@@ -148,7 +148,11 @@ Fuck you really want to define a netlist.
         - mary
 
 #+end_src
-  
+
+
+``(left, top, right, bottom)`` bounding box
+
+
 * References
  - https://json-schema.org/understanding-json-schema/reference/numeric.html
  - https://json-schema.org/learn/miscellaneous-examples.html
@@ -158,3 +162,7 @@ Fuck you really want to define a netlist.
  - https://python-jsonschema.readthedocs.io/en/latest/
  - https://pynative.com/python-json-validation/
  - http://donofden.com/blog/2020/03/15/How-to-Validate-JSON-Schema-using-Python
+ - https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Positions
+ - https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
+
+   

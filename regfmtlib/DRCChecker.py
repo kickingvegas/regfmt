@@ -13,6 +13,7 @@ class DRCChecker:
 
 
     def check(self, registerDB: TopLevel):
+        # TODO: this should be a throwing method
         self.checkFieldWidths(registerDB)
 
     def checkFieldWidths(self, registerDB: TopLevel):
@@ -53,23 +54,23 @@ class DRCChecker:
                     field.leftIndex = count
                     count -= (field.width - 1)
                     field.rightIndex = count
-                    print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
+                    #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
                 elif endian == Endian.littleBit.value:
                     count += 1
                     field.leftIndex = count
                     count += (field.width - 1)
                     field.rightIndex = count
-                    print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
+                    #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
                 elif endian == Endian.littleByte.value:
                     count += 1
                     field.rightIndex = count
                     count += (field.width - 1)
                     field.leftIndex = count
-                    print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
+                    #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
-            print('###')
+            #print('###')
 
 
 
