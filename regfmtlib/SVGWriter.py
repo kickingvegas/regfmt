@@ -1,7 +1,7 @@
 import sys
 from xml.dom.minidom import getDOMImplementation
-from regfmtlib.TopLevel import TopLevel
-from regfmtlib.Register import Register
+from regfmtlib import TopLevel
+from regfmtlib import Register
 from PIL import ImageFont
 
 BASE_FONT_SIZE = 12

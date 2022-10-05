@@ -1,17 +1,17 @@
-from regfmtlib import TopLevel
 from regfmtlib import Constants
 from regfmtlib import Endian
 from regfmtlib import Field
 
-DEFAULT_WIDTH = Constants.Constants.DEFAULT_WIDTH
+DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
 
 class Register:
-    def __init__(self, parent: TopLevel, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigByte):
+    def __init__(self, parent, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigByte):
         self.name: str = None
         self.width: int = DEFAULT_WIDTH
         self.endian: Endian = endian
         self.fields: [Field] = None
-        self.parent: TopLevel = parent
+        # parent is type TopLevel
+        self.parent = parent
         if config:
             self.initFromConfig(config)
 
@@ -23,7 +23,7 @@ class Register:
         if 'fields' in config:
             fields = []
             for fieldConfig in config['fields']:
-                field = Field.Field(config=fieldConfig)
+                field = Field(config=fieldConfig)
                 fields.append(field)
 
             self.fields = fields

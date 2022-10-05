@@ -4,11 +4,11 @@
 
 import os
 import sys
-from regfmtlib.CommandLineParser import CommandLineParser
-from regfmtlib.InputLoadAndValidate import InputLoadAndValidate
-from regfmtlib.TopLevel import TopLevel
-from regfmtlib.DRCChecker import DRCChecker
-from regfmtlib.SVGWriter import SVGWriter
+from regfmtlib import CommandLineParser
+from regfmtlib import InputLoadAndValidate
+from regfmtlib import TopLevel
+from regfmtlib import DRCChecker
+from regfmtlib import SVGWriter
 
 VERSION = '0.1.0'
 
@@ -51,9 +51,7 @@ class RegisterFormat:
         svgWriter = SVGWriter(registerDB, self.stdout)
         svgWriter.writeSVG()
 
-
-
-        # wrap up 
+        # wrap up
         if self.stdout != sys.stdout:
             self.stdout.close()
 

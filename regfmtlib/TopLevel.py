@@ -1,6 +1,6 @@
-from regfmtlib.Constants import Constants
-from regfmtlib.Register import Register
-from regfmtlib.Endian import Endian
+from regfmtlib import Constants
+from regfmtlib import Register
+from regfmtlib import Endian
 
 DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
 

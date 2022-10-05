@@ -6,8 +6,8 @@ class Field:
         self.rightIndex: int = None
 
         if config:
-            self.name = config['name'] if 'name' in config else None
-            if 'width' in config and type(config['width']) == type(1):
+            self.name = config['name']
+            if 'width' in config:
                 self.width = config['width']
             else:
                 # TODO: throw error

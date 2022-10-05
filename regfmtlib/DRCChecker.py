@@ -1,7 +1,7 @@
-from regfmtlib.Register import Register
-from regfmtlib.Field import Field
-from regfmtlib.TopLevel import TopLevel
-from regfmtlib.Endian import Endian
+from regfmtlib import Register
+from regfmtlib import Field
+from regfmtlib import TopLevel
+from regfmtlib import Endian
 from operator import add
 from functools import reduce
 import sys
