@@ -52,11 +52,6 @@ class SVGWriter:
 
         children = []
         
-        # append all new nodes to topElement
-        # field0 = self.writeRect(doc, x=0, y=0, width=100, height=50, stroke='black')
-        # field1 = self.writeRect(doc, x=100, y=0, width=100, height=50, stroke='black')
-        # text0 = self.writeText(doc, "A1", x='0', y='0.5in')
-        # children = [field0, field1, text0]
         registers: [Register] = self.registerDB.registers
         registerNames: [string] = [register.name for register in registers]
 
@@ -64,7 +59,7 @@ class SVGWriter:
         cBbox = self.font.getbbox('M', anchor='lt')
 
 
-        cx = bboxLength(cBbox) * 3
+        cx = bboxLength(cBbox) * 2
         cy = bboxHeight(cBbox) * 4
 
         for register in registers:
@@ -95,7 +90,7 @@ class SVGWriter:
                                                y=fieldY,
                                                width=fieldWidth,
                                                height=fieldHeight,
-                                               strokeWidth="0.1"))
+                                               strokeWidth="0.5"))
 
                 # write field name
 
@@ -105,18 +100,42 @@ class SVGWriter:
 
                 #print(fieldNameBbox)
 
-                fieldNameX = fieldNameBbox[0] + displacement
+                fieldNameX = fieldNameBbox[0] + (fieldWidth/2.0) + displacement
                 # cheat? need to know what the actual bounding box is here.
-                fieldNameY = fieldNameBbox[3] + 0
+                fieldNameY = fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0)
 
                 #print(fieldNameX, fieldNameY)
 
                 e = self.writeText(doc,
                                    field.name,
                                    x=str(fieldNameX),
-                                   y=str(fieldNameY))
+                                   y=str(fieldNameY),
+                                   textAnchor='middle')
 
                 children.append(e)
+
+
+                fieldLeftIndexX = fieldX + 3
+                fieldLeftIndexY = fieldY + fieldHeight - 3
+
+                eLeft = self.writeText(doc,
+                                       str(field.leftIndex),
+                                       x=str(fieldLeftIndexX),
+                                       y=str(fieldLeftIndexY),
+                                       fontSize='10pt',
+                                       textAnchor='start')
+                children.append(eLeft)
+
+                fieldRightIndexX = fieldX + fieldWidth - 3
+                fieldRightIndexY = fieldY + fieldHeight - 3
+
+                eRight = self.writeText(doc,
+                                        str(field.rightIndex),
+                                        x=str(fieldRightIndexX),
+                                        y=str(fieldRightIndexY),
+                                        fontSize='10pt',
+                                        textAnchor='end')
+                children.append(eRight)
 
                 displacement += fieldWidth
             break
@@ -177,9 +196,9 @@ class SVGWriter:
                   x="0",
                   y="0",
                   fontSize="12pt",
-                  fontFamily="Helvetica, Futura, sans-serif",
-                  textAnchor="left",
-                  fill="blue"):
+                  fontFamily="Futura, Helvetica, sans-serif",
+                  textAnchor="start",
+                  fill="black"):
         # x, y are the lower left baseline of the text
         textElement = doc.createElement('text')
         textElement.setAttribute('x', x)
