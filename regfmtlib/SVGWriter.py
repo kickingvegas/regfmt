@@ -62,11 +62,12 @@ class SVGWriter:
         cx = bboxLength(cBbox) * 2
         cy = bboxHeight(cBbox) * 4
 
+        displacementY = 0
         for register in registers:
             registerWidth = register.width * cx
             registerHeight = cy
 
-            displacement = 0
+            displacementX = 0
             for field in register.fields:
                 fieldWidth = field.width * cx
                 fieldHeight = registerHeight
@@ -76,7 +77,7 @@ class SVGWriter:
 
                 #print((fieldX, fieldY, fieldWidth, fieldHeight), field.name)
 
-                T = translateTransform(displacement, 0)
+                T = translateTransform(displacementX, displacementY)
                 V = vector2D(fieldX, fieldY)
 
                 tranformedV = matrixMult(T, V)
@@ -100,9 +101,9 @@ class SVGWriter:
 
                 #print(fieldNameBbox)
 
-                fieldNameX = fieldNameBbox[0] + (fieldWidth/2.0) + displacement
+                fieldNameX = fieldNameBbox[0] + (fieldWidth/2.0) + displacementX
                 # cheat? need to know what the actual bounding box is here.
-                fieldNameY = fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0)
+                fieldNameY = fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0) + displacementY
 
                 #print(fieldNameX, fieldNameY)
 
@@ -113,7 +114,6 @@ class SVGWriter:
                                    textAnchor='middle')
 
                 children.append(e)
-
 
                 fieldLeftIndexX = fieldX + 3
                 fieldLeftIndexY = fieldY + fieldHeight - 3
@@ -137,8 +137,9 @@ class SVGWriter:
                                         textAnchor='end')
                 children.append(eRight)
 
-                displacement += fieldWidth
-            break
+                displacementX += fieldWidth
+
+            displacementY += (fieldHeight + fieldHeight/2.0)
 
         self.renderSVG(doc, topElement, children, self.outfile)
 
