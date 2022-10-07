@@ -12,7 +12,7 @@ class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile):
         self.registerDB = registerDB
         self.outfile = outfile
-        self.font = ImageFont.truetype('Helvetica', 12)
+        self.font = ImageFont.truetype('Helvetica', BASE_FONT_SIZE)
 
     def createDocument(self):
         dom = getDOMImplementation()
@@ -33,17 +33,25 @@ class SVGWriter:
         topGroup = Group()
 
         # Generate groups, each group holding a single register
-
         # layoutGeometry, transformGeometry, writeDOM, compositeSVG
-        
 
         # Layout Geometry
         for register in registers:
             # define untransformed geometry for register
             registerHeight = bitFieldSize.height
+            registerWidth = bitFieldSize.width * register.width
 
             registerGroup = Group()
             topGroup.append(registerGroup)
+
+            if register.name is not None:
+                registerNameBbox = self.font.getbbox(register.name, anchor='lt')
+                registerNameHeight = bboxHeight(registerNameBbox)
+                registerGroup.append(Text(register.name,
+                                          x = registerWidth + 10,
+                                          y = registerNameHeight + (registerHeight/2.0) - (registerNameHeight / 2.0),
+                                          fontSize=BASE_FONT_SIZE
+                                          ))
 
             displacementX = 0
             for field in register.fields:
@@ -60,27 +68,29 @@ class SVGWriter:
 
                 registerGroup.append(Rect(x=fieldX, y=fieldY, width=fieldWidth, height=fieldHeight))
 
-                fieldNameBbox = self.font.getbbox(field.name, anchor='la')
-                fieldNameHeight = bboxHeight(fieldNameBbox)
-                fieldNameWidth = bboxWidth(fieldNameBbox)
+                if field.name is not None:
+                    fieldNameBbox = self.font.getbbox(field.name, anchor='la')
+                    fieldNameHeight = bboxHeight(fieldNameBbox)
+                    fieldNameWidth = bboxWidth(fieldNameBbox)
 
-                registerGroup.append(Text(field.name,
-                                          x=fieldNameBbox[0] + (fieldWidth/2.0) + displacementX,
-                                          y=fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0),
-                                          textAnchor='middle'
-                                          ))
+                    registerGroup.append(Text(field.name,
+                                              x=fieldNameBbox[0] + (fieldWidth/2.0) + displacementX,
+                                              y=fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0),
+                                              fontSize=BASE_FONT_SIZE,
+                                              textAnchor='middle'
+                                              ))
 
                 registerGroup.append(Text(str(field.leftIndex),
                                           x=fieldX + 3,
                                           y=fieldY + fieldHeight - 3,
-                                          fontSize='10pt',
+                                          fontSize=10,
                                           textAnchor='start'
                                           ))
 
                 registerGroup.append(Text(str(field.rightIndex),
                                           x=fieldX + fieldWidth - 3,
                                           y=fieldY + fieldHeight - 3,
-                                          fontSize='10pt',
+                                          fontSize=10,
                                           textAnchor='end'
                                           ))
 

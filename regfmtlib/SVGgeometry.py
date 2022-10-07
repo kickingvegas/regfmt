@@ -24,6 +24,13 @@ def coordinateFromVector2D(V):
     result = (V[0][0], V[1][0])
     return result
 
+def numToUnitString(num, unit: str=''):
+    if unit == '':
+        result = '{0}'.format(num)
+    else:
+        result = '{0}{1}'.format(num, unit)
+    return result
+
 class Group(UserList):
     def writeDOM(self, children, doc):
         """
@@ -49,9 +56,6 @@ class Group(UserList):
                 #print('translating {0} by {1}, {2}'.format(element, dx, dy))
                 shape: Shape = element
                 shape.translate(dx, dy)
-
-
-
 
 class Point:
     def __init__(self, x: float=0.0, y: float=0.0):
@@ -128,7 +132,7 @@ class Text(Shape):
     def __init__(self,
                  text="something",
                  x: float = 0.0, y: float = 0.0, width: float = 0.0, height: float = 0.0,
-                 fontSize="12pt",
+                 fontSize=12,
                  fontFamily="Futura, Helvetica, sans-serif",
                  textAnchor="start",
                  fill="black"
@@ -145,7 +149,7 @@ class Text(Shape):
         textElement = doc.createElement('text')
         textElement.setAttribute('x', str(self.frame.origin.x))
         textElement.setAttribute('y', str(self.frame.origin.y))
-        textElement.setAttribute('font-size', self.fontSize)
+        textElement.setAttribute('font-size', numToUnitString(self.fontSize, 'pt'))
         textElement.setAttribute('font-family', self.fontFamily)
         textElement.setAttribute('text-anchor', self.textAnchor)
         textElement.setAttribute('fill', self.fill)

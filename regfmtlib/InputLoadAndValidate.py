@@ -56,7 +56,9 @@ $defs:
     type: object
     properties:
       name:
-        type: string
+        type: 
+          - string
+          - "null"
       width:
         type: integer
     required:
@@ -66,7 +68,9 @@ $defs:
     type: object
     properties:
       name:
-        type: string
+        type: 
+          - string
+          - "null"
       width:
         type: integer
 
@@ -79,7 +83,6 @@ $defs:
           $ref: "#/$defs/field"
 
     required:
-      - name
       - fields
 """
 
@@ -132,8 +135,3 @@ class InputLoadAndValidate:
 
 
         return yamlConfig
-
-
-        
-        
-    
