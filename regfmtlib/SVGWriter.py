@@ -3,39 +3,16 @@ from xml.dom.minidom import getDOMImplementation
 from regfmtlib import TopLevel
 from regfmtlib import Register
 from PIL import ImageFont
+from regfmtlib.SVGgeometry import *
 
 BASE_FONT_SIZE = 12
 
-def bboxLength(bbox):
-    return (bbox[2] - bbox[0])
-
-def bboxHeight(bbox):
-    return (bbox[3] - bbox[1])
-
-def matrixMult(X, Y):
-    result = [[sum(a*b for a,b in zip(X_row,Y_col)) for Y_col in zip(*Y)] for X_row in X]
-    return result
-
-def translateTransform(x, y):
-    result = [[1.0, 0.0, x],
-              [0.0, 1.0, y],
-              [0.0, 0.0, 1.0]]
-    return result
-
-def vector2D(x, y):
-    result = [[x], [y], [1.0]]
-    return result
-
-def coordinateFromVector2D(V):
-    result = (V[0][0], V[1][0])
-    return result
 
 class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile):
         self.registerDB = registerDB
         self.outfile = outfile
         self.font = ImageFont.truetype('Helvetica', 12)
-
 
     def createDocument(self):
         dom = getDOMImplementation()
@@ -46,6 +23,85 @@ class SVGWriter:
         return doc, topElement
 
     def writeSVG(self):
+        doc, topElement = self.createDocument()
+        children = []
+
+        registers: [Register] = self.registerDB.registers
+        bitFieldSize = self.getBitFieldSize(self.font)
+
+        topGroup = Group()
+
+        # Generate groups, each group holding a single register
+
+        for register in registers:
+            registerHeight = bitFieldSize.height
+
+            registerGroup = Group()
+            topGroup.append(registerGroup)
+
+            displacementX = 0
+            for field in register.fields:
+                fieldWidth = field.width * bitFieldSize.width
+                fieldHeight = registerHeight
+
+                fieldX = 0
+                fieldY = 0
+
+                T = translateTransform(displacementX, 0.0)
+                V = vector2D(fieldX, fieldY)
+                transformedV = matrixMult(T, V)
+                fieldX, fieldY = coordinateFromVector2D(transformedV)
+
+                registerGroup.append(Rect(x=fieldX, y=fieldY, width=fieldWidth, height=fieldHeight))
+
+                fieldNameBbox = self.font.getbbox(field.name, anchor='la')
+                fieldNameHeight = bboxHeight(fieldNameBbox)
+                fieldNameWidth = bboxWidth(fieldNameBbox)
+
+                registerGroup.append(Text(field.name,
+                                          x=fieldNameBbox[0] + (fieldWidth/2.0) + displacementX,
+                                          y=fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0),
+                                          textAnchor='middle'
+                                          ))
+
+                registerGroup.append(Text(str(field.leftIndex),
+                                          x=fieldX + 3,
+                                          y=fieldY + fieldHeight - 3,
+                                          fontSize='10pt',
+                                          textAnchor='start'
+                                          ))
+
+                registerGroup.append(Text(str(field.rightIndex),
+                                          x=fieldX + fieldWidth - 3,
+                                          y=fieldY + fieldHeight - 3,
+                                          fontSize='10pt',
+                                          textAnchor='end'
+                                          ))
+
+                displacementX += fieldWidth
+
+            break
+
+        for registerGroup in topGroup:
+            for obj in registerGroup:
+                children.append(obj.writeDOM(doc))
+        self.renderSVG(doc, topElement, children, self.outfile)
+
+    def getBitFieldSize(self, font):
+        """
+        Return unit size of a bit field to be rendered in SVG.
+
+        :param font:
+        :return: instance of Size()
+        """
+        bbox = font.getbbox('M', anchor='lt')
+        x = bbox[0]
+        y = bbox[1]
+        width = bboxWidth(bbox) * 2
+        height = bboxHeight(bbox) * 4
+        return Size(width, height)
+
+    def oldWriteSVG(self):
         #self.writeScratch()
 
         doc, topElement = self.createDocument()
@@ -147,28 +203,6 @@ class SVGWriter:
         for child in children:
             topElement.appendChild(child)
         doc.writexml(self.outfile, encoding='utf-8', addindent="  ", newl="\n")
-
-    def writeScratch(self):
-        self.outfile.write('hey they clittiak\n')
-
-        registers: [Register] = self.registerDB.registers
-        registerNames: [string] = [register.name for register in registers]
-
-        print(registerNames)
-
-        for register in registers:
-            registerName = register.name
-            fieldNames: [string] = [field.name for field in register.fields]
-            fieldIndexes = [(str(field.leftIndex), str(field.rightIndex)) for field in register.fields]
-
-            print(fieldNames, registerName, fieldIndexes)
-
-            for name in fieldNames:
-                bbox = self.font.getbbox(name)
-                length = self.font.getlength(name)
-                print(name, bbox, length)
-
-        
 
     def writeRect(self,
                   doc,

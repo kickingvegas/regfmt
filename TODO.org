@@ -11,6 +11,7 @@ CLOSED: [2022-09-29 Thu 13:55]
 CLOSED: [2022-09-29 Thu 18:15]
 ** IN_PROGRESS Implement DRC check
 ** IN_PROGRESS Implement SVG Renderer
+
 *** TODO Define regfmt style configuration schema
 ** TODO Add license
 
