@@ -25,8 +25,21 @@ def coordinateFromVector2D(V):
     return result
 
 class Group(UserList):
-    def render(self):
-        pass
+    def flatten(self, children, doc):
+        """
+        Recursive routine to populate children with all DOM elements corresponding
+        to the nodes in this instance of Group.
+
+        :param children: list of DOM elements
+        :param doc: SVG XML document
+        :return: none
+        """
+        for element in self.data:
+            if isinstance(element, Group):
+                element.flatten(children, doc)
+            else:
+                shape: Shape = element
+                children.append(shape.writeDOM(doc))
 
 class Point:
     def __init__(self, x: float=0.0, y: float=0.0):
@@ -60,6 +73,10 @@ class Shape:
     def setSize(self, width: float=0.0, height: float=0.0):
         self.frame.size.width = width
         self.frame.size.height = height
+
+    def writeDOM(self, doc):
+        # virtual method; intended to be overridden
+        pass
 
 class Rect(Shape):
     def __init__(self,

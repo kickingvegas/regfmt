@@ -29,11 +29,17 @@ class SVGWriter:
         registers: [Register] = self.registerDB.registers
         bitFieldSize = self.getBitFieldSize(self.font)
 
+        # Initialize container for geometry
         topGroup = Group()
 
         # Generate groups, each group holding a single register
 
+        # layoutGeometry, transformGeometry, writeDOM, compositeSVG
+        
+
+        # Layout Geometry
         for register in registers:
+            # define untransformed geometry for register
             registerHeight = bitFieldSize.height
 
             registerGroup = Group()
@@ -80,12 +86,11 @@ class SVGWriter:
 
                 displacementX += fieldWidth
 
-            break
+            #break
 
-        for registerGroup in topGroup:
-            for obj in registerGroup:
-                children.append(obj.writeDOM(doc))
-        self.renderSVG(doc, topElement, children, self.outfile)
+        # 
+        topGroup.flatten(children, doc)
+        self.compositeSVG(doc, topElement, children, self.outfile)
 
     def getBitFieldSize(self, font):
         """
@@ -101,6 +106,7 @@ class SVGWriter:
         height = bboxHeight(bbox) * 4
         return Size(width, height)
 
+    # deprecated    
     def oldWriteSVG(self):
         #self.writeScratch()
 
@@ -197,13 +203,14 @@ class SVGWriter:
 
             displacementY += (fieldHeight + fieldHeight/2.0)
 
-        self.renderSVG(doc, topElement, children, self.outfile)
+        self.compositeSVG(doc, topElement, children, self.outfile)
 
-    def renderSVG(self, doc, topElement, children, outfile):
+    def compositeSVG(self, doc, topElement, children, outfile):
         for child in children:
             topElement.appendChild(child)
         doc.writexml(self.outfile, encoding='utf-8', addindent="  ", newl="\n")
 
+    # deprecated
     def writeRect(self,
                   doc,
                   x=0,
@@ -225,6 +232,7 @@ class SVGWriter:
         rectElement.setAttribute('stroke-linecap', strokeLinecap)
         return rectElement
 
+    # deprecated
     def writeText(self,
                   doc,
                   value,
