@@ -88,9 +88,15 @@ class SVGWriter:
 
             #break
 
-        # 
-        topGroup.flatten(children, doc)
-        self.compositeSVG(doc, topElement, children, self.outfile)
+        # Transform Geometry
+        displacementY = 0
+        for group in topGroup:
+            group.translate(0, displacementY)
+            displacementY += (bitFieldSize.height + 5)
+
+        # Write DOM and composite to SVG
+        self.compositeSVG(doc, topElement, topGroup, self.outfile)
+
 
     def getBitFieldSize(self, font):
         """
@@ -205,10 +211,12 @@ class SVGWriter:
 
         self.compositeSVG(doc, topElement, children, self.outfile)
 
-    def compositeSVG(self, doc, topElement, children, outfile):
+    def compositeSVG(self, doc, topElement, topGroup, outfile):
+        children = []
+        topGroup.writeDOM(children, doc)
         for child in children:
             topElement.appendChild(child)
-        doc.writexml(self.outfile, encoding='utf-8', addindent="  ", newl="\n")
+        doc.writexml(outfile, encoding='utf-8', addindent="  ", newl="\n")
 
     # deprecated
     def writeRect(self,

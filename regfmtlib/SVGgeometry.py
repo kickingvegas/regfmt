@@ -25,7 +25,7 @@ def coordinateFromVector2D(V):
     return result
 
 class Group(UserList):
-    def flatten(self, children, doc):
+    def writeDOM(self, children, doc):
         """
         Recursive routine to populate children with all DOM elements corresponding
         to the nodes in this instance of Group.
@@ -36,10 +36,22 @@ class Group(UserList):
         """
         for element in self.data:
             if isinstance(element, Group):
-                element.flatten(children, doc)
+                element.writeDOM(children, doc)
             else:
                 shape: Shape = element
                 children.append(shape.writeDOM(doc))
+
+    def translate(self, dx: float=0.0, dy: float=0.0):
+        for element in self.data:
+            if isinstance(element, Group):
+                element.translate(dx, dy)
+            else:
+                #print('translating {0} by {1}, {2}'.format(element, dx, dy))
+                shape: Shape = element
+                shape.translate(dx, dy)
+
+
+
 
 class Point:
     def __init__(self, x: float=0.0, y: float=0.0):
@@ -77,6 +89,13 @@ class Shape:
     def writeDOM(self, doc):
         # virtual method; intended to be overridden
         pass
+
+    def translate(self, dx: float=0.0, dy: float=0.0):
+        T = translateTransform(dx, dy)
+        V = vector2D(self.origin().x, self.origin().y)
+        transformedV = matrixMult(T, V)
+        newX, newY = coordinateFromVector2D(transformedV)
+        self.setOrigin(newX, newY)
 
 class Rect(Shape):
     def __init__(self,
