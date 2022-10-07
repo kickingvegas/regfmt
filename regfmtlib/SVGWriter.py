@@ -12,7 +12,7 @@ class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile):
         self.registerDB = registerDB
         self.outfile = outfile
-        self.font = ImageFont.truetype('Helvetica', BASE_FONT_SIZE)
+        self.font = ImageFont.truetype('Futura', BASE_FONT_SIZE)
 
     def createDocument(self):
         dom = getDOMImplementation()
@@ -35,7 +35,7 @@ class SVGWriter:
         # Generate groups, each group holding a single register
         # layoutGeometry, transformGeometry, writeDOM, compositeSVG
 
-        # Layout Geometry
+        # Layout Geometry - all decisions on the graphical layout of a register instance are done here.
         for register in registers:
             # define untransformed geometry for register
             registerHeight = bitFieldSize.height
@@ -127,5 +127,3 @@ class SVGWriter:
         for child in children:
             topElement.appendChild(child)
         doc.writexml(outfile, encoding='utf-8', addindent="  ", newl="\n")
-
-
