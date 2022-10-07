@@ -97,7 +97,6 @@ class SVGWriter:
         # Write DOM and composite to SVG
         self.compositeSVG(doc, topElement, topGroup, self.outfile)
 
-
     def getBitFieldSize(self, font):
         """
         Return unit size of a bit field to be rendered in SVG.
@@ -112,105 +111,6 @@ class SVGWriter:
         height = bboxHeight(bbox) * 4
         return Size(width, height)
 
-    # deprecated    
-    def oldWriteSVG(self):
-        #self.writeScratch()
-
-        doc, topElement = self.createDocument()
-
-        children = []
-        
-        registers: [Register] = self.registerDB.registers
-        registerNames: [string] = [register.name for register in registers]
-
-        cx = self.font.getlength('M') * 3
-        cBbox = self.font.getbbox('M', anchor='lt')
-
-
-        cx = bboxLength(cBbox) * 2
-        cy = bboxHeight(cBbox) * 4
-
-        displacementY = 0
-        for register in registers:
-            registerWidth = register.width * cx
-            registerHeight = cy
-
-            displacementX = 0
-            for field in register.fields:
-                fieldWidth = field.width * cx
-                fieldHeight = registerHeight
-
-                fieldX = 0
-                fieldY = 0
-
-                #print((fieldX, fieldY, fieldWidth, fieldHeight), field.name)
-
-                T = translateTransform(displacementX, displacementY)
-                V = vector2D(fieldX, fieldY)
-
-                tranformedV = matrixMult(T, V)
-                #print(coordinateFromVector2D(tranformedV), (fieldWidth, fieldHeight))
-                # self.renderField(field)
-
-                fieldX, fieldY = coordinateFromVector2D(tranformedV)
-
-                children.append(self.writeRect(doc,
-                                               x=fieldX,
-                                               y=fieldY,
-                                               width=fieldWidth,
-                                               height=fieldHeight,
-                                               strokeWidth="0.5"))
-
-                # write field name
-
-                fieldNameBbox = self.font.getbbox(field.name, anchor='la')
-                fieldNameHeight = bboxHeight(fieldNameBbox)
-                fieldNameWidth = bboxLength(fieldNameBbox)
-
-                #print(fieldNameBbox)
-
-                fieldNameX = fieldNameBbox[0] + (fieldWidth/2.0) + displacementX
-                # cheat? need to know what the actual bounding box is here.
-                fieldNameY = fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0) + displacementY
-
-                #print(fieldNameX, fieldNameY)
-
-                e = self.writeText(doc,
-                                   field.name,
-                                   x=str(fieldNameX),
-                                   y=str(fieldNameY),
-                                   textAnchor='middle')
-
-                children.append(e)
-
-                fieldLeftIndexX = fieldX + 3
-                fieldLeftIndexY = fieldY + fieldHeight - 3
-
-                eLeft = self.writeText(doc,
-                                       str(field.leftIndex),
-                                       x=str(fieldLeftIndexX),
-                                       y=str(fieldLeftIndexY),
-                                       fontSize='10pt',
-                                       textAnchor='start')
-                children.append(eLeft)
-
-                fieldRightIndexX = fieldX + fieldWidth - 3
-                fieldRightIndexY = fieldY + fieldHeight - 3
-
-                eRight = self.writeText(doc,
-                                        str(field.rightIndex),
-                                        x=str(fieldRightIndexX),
-                                        y=str(fieldRightIndexY),
-                                        fontSize='10pt',
-                                        textAnchor='end')
-                children.append(eRight)
-
-                displacementX += fieldWidth
-
-            displacementY += (fieldHeight + fieldHeight/2.0)
-
-        self.compositeSVG(doc, topElement, children, self.outfile)
-
     def compositeSVG(self, doc, topElement, topGroup, outfile):
         children = []
         topGroup.writeDOM(children, doc)
@@ -218,47 +118,4 @@ class SVGWriter:
             topElement.appendChild(child)
         doc.writexml(outfile, encoding='utf-8', addindent="  ", newl="\n")
 
-    # deprecated
-    def writeRect(self,
-                  doc,
-                  x=0,
-                  y=0,
-                  width=0,
-                  height=0,
-                  fill='none',
-                  stroke='black',
-                  strokeWidth='1',
-                  strokeLinecap='square'):
-        rectElement = doc.createElement('rect')
-        rectElement.setAttribute('x', str(x))
-        rectElement.setAttribute('y', str(y))
-        rectElement.setAttribute('width', str(width))
-        rectElement.setAttribute('height', str(height))
-        rectElement.setAttribute('fill', fill)
-        rectElement.setAttribute('stroke', stroke)
-        rectElement.setAttribute('stroke-width', strokeWidth)
-        rectElement.setAttribute('stroke-linecap', strokeLinecap)
-        return rectElement
 
-    # deprecated
-    def writeText(self,
-                  doc,
-                  value,
-                  x="0",
-                  y="0",
-                  fontSize="12pt",
-                  fontFamily="Futura, Helvetica, sans-serif",
-                  textAnchor="start",
-                  fill="black"):
-        # x, y are the lower left baseline of the text
-        textElement = doc.createElement('text')
-        textElement.setAttribute('x', x)
-        textElement.setAttribute('y', y)
-        textElement.setAttribute('font-size', fontSize)
-        textElement.setAttribute('font-family', fontFamily)
-        textElement.setAttribute('text-anchor', textAnchor)
-        textElement.setAttribute('fill', fill)
-
-        textNode = doc.createTextNode(value)
-        textElement.appendChild(textNode)
-        return textElement
