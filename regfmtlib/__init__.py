@@ -6,6 +6,8 @@ from .Field import Field
 from .Register import Register
 from .TopLevel import TopLevel
 from .DRCChecker import DRCChecker
-from .SVGgeometry import *
-from .SVGWriter import SVGWriter
+from .cssstyles import *
+from .svggeometry import *
+from .svgwriter import SVGWriter
+
 

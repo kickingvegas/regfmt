@@ -1,3 +1,5 @@
+from regfmtlib.cssstyles import *
+
 from collections import UserList
 
 def bboxWidth(bbox):
@@ -104,16 +106,10 @@ class Shape:
 class Rect(Shape):
     def __init__(self,
                  x: float = 0.0, y: float = 0.0, width: float = 0.0, height: float = 0.0,
-                 fill = 'none',
-                 stroke = 'black',
-                 strokeWidth = 1,
-                 strokeLinecap = 'square'
+                 style: RectStyle = RectStyle(),
                  ):
         Shape.__init__(self, x, y, width, height)
-        self.fill = fill
-        self.stroke = stroke
-        self.strokeWidth = strokeWidth
-        self.strokeLinecap = strokeLinecap
+        self.style: RectStyle = style
 
     def writeDOM(self, doc):
         rectElement = doc.createElement('rect')
@@ -121,38 +117,33 @@ class Rect(Shape):
         rectElement.setAttribute('y', str(self.frame.origin.y))
         rectElement.setAttribute('width', str(self.frame.size.width))
         rectElement.setAttribute('height', str(self.frame.size.height))
-        rectElement.setAttribute('fill', self.fill)
-        rectElement.setAttribute('stroke', self.stroke)
-        rectElement.setAttribute('stroke-width', str(self.strokeWidth))
-        rectElement.setAttribute('stroke-linecap', self.strokeLinecap)
+        rectElement.setAttribute('fill', self.style.fill)
+        rectElement.setAttribute('stroke', self.style.stroke)
+        rectElement.setAttribute('stroke-width', str(self.style.strokeWidth))
+        rectElement.setAttribute('stroke-linecap', self.style.strokeLinecap.value)
         return rectElement
-
 
 class Text(Shape):
     def __init__(self,
                  text="something",
                  x: float = 0.0, y: float = 0.0, width: float = 0.0, height: float = 0.0,
-                 fontSize=12,
-                 fontFamily="Futura, Helvetica, sans-serif",
-                 textAnchor="start",
-                 fill="black"
+                 textAnchor: str='start',
+                 style: TextStyle = TextStyle()
                  ):
 
         Shape.__init__(self, x, y, width, height)
         self.text = text
-        self.fontSize = fontSize
-        self.fontFamily = fontFamily
         self.textAnchor = textAnchor
-        self.fill = fill
+        self.style = style
 
     def writeDOM(self, doc):
         textElement = doc.createElement('text')
         textElement.setAttribute('x', str(self.frame.origin.x))
         textElement.setAttribute('y', str(self.frame.origin.y))
-        textElement.setAttribute('font-size', numToUnitString(self.fontSize, 'pt'))
-        textElement.setAttribute('font-family', self.fontFamily)
+        textElement.setAttribute('font-size', self.style.fontSize)
+        textElement.setAttribute('font-family', ','.join(self.style.fontFamily))
         textElement.setAttribute('text-anchor', self.textAnchor)
-        textElement.setAttribute('fill', self.fill)
+        textElement.setAttribute('fill', self.style.fill)
 
         textNode = doc.createTextNode(self.text)
         textElement.appendChild(textNode)

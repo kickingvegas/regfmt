@@ -1,18 +1,34 @@
-import sys
+import os
 from xml.dom.minidom import getDOMImplementation
 from regfmtlib import TopLevel
 from regfmtlib import Register
 from PIL import ImageFont
-from regfmtlib.SVGgeometry import *
+import tinycss2
+from regfmtlib.cssstyles import *
+from regfmtlib.svggeometry import *
+from regfmtlib.cssparser import parseCSS
 
 BASE_FONT_SIZE = 12
 
-
 class SVGWriter:
-    def __init__(self, registerDB: TopLevel, outfile):
+    def __init__(self, registerDB: TopLevel, outfile, configFileName=None):
         self.registerDB = registerDB
         self.outfile = outfile
-        self.font = ImageFont.truetype('Futura', BASE_FONT_SIZE)
+        self.styleSheet = StyleSheet()
+        if configFileName:
+            parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
+
+        baseFontname = self.styleSheet.body.fontFamily[0]
+        baseFontSize = self.styleSheet.body.fontSize
+
+        if 'pt' in baseFontSize:
+            baseFontSize = int(baseFontSize.replace('pt', ''))
+
+        else:
+            # give up
+            baseFontSize = 12
+
+        self.font = ImageFont.truetype(baseFontname, baseFontSize)
 
     def createDocument(self):
         dom = getDOMImplementation()
@@ -50,7 +66,7 @@ class SVGWriter:
                 registerGroup.append(Text(register.name,
                                           x = registerWidth + 10,
                                           y = registerNameHeight + (registerHeight/2.0) - (registerNameHeight / 2.0),
-                                          fontSize=BASE_FONT_SIZE
+                                          style=self.styleSheet.registerName
                                           ))
 
             displacementX = 0
@@ -66,7 +82,11 @@ class SVGWriter:
                 transformedV = matrixMult(T, V)
                 fieldX, fieldY = coordinateFromVector2D(transformedV)
 
-                registerGroup.append(Rect(x=fieldX, y=fieldY, width=fieldWidth, height=fieldHeight))
+                registerGroup.append(Rect(x=fieldX,
+                                          y=fieldY,
+                                          width=fieldWidth,
+                                          height=fieldHeight,
+                                          style=self.styleSheet.field))
 
                 if field.name is not None:
                     fieldNameBbox = self.font.getbbox(field.name, anchor='la')
@@ -76,22 +96,22 @@ class SVGWriter:
                     registerGroup.append(Text(field.name,
                                               x=fieldNameBbox[0] + (fieldWidth/2.0) + displacementX,
                                               y=fieldNameBbox[3] + (fieldHeight/2.0) - (fieldNameHeight/2.0),
-                                              fontSize=BASE_FONT_SIZE,
-                                              textAnchor='middle'
+                                              textAnchor='middle',
+                                              style=self.styleSheet.fieldName
                                               ))
 
                 registerGroup.append(Text(str(field.leftIndex),
                                           x=fieldX + 3,
                                           y=fieldY + fieldHeight - 3,
-                                          fontSize=10,
-                                          textAnchor='start'
+                                          textAnchor='start',
+                                          style=self.styleSheet.fieldIndex
                                           ))
 
                 registerGroup.append(Text(str(field.rightIndex),
                                           x=fieldX + fieldWidth - 3,
                                           y=fieldY + fieldHeight - 3,
-                                          fontSize=10,
-                                          textAnchor='end'
+                                          textAnchor='end',
+                                          style=self.styleSheet.fieldIndex
                                           ))
 
                 displacementX += fieldWidth

@@ -64,14 +64,14 @@ String enum value to describe the layout order of a bit field.
 | both   | Render both. (Default)                                            |
 | none   | Do not render any bit field value. Can also specify a ~null~ value. |
  
-* Punchlist [0/4]
+* Punchlist [1/4]
 - [-] Define Configuration Schema
-  - [-] Register Definition
+  - [X] Register Definition
   - [ ] Style Definition
-- [ ] Process configuration file 
-  - [ ] Validate Configuration
-  - [ ] DRC configuration
-- [ ] SVG Rendering
+- [X] Process configuration file 
+  - [X] Validate Configuration
+  - [X] DRC configuration
+- [-] SVG Rendering
 - [ ] Tests
 
 https://stackoverflow.com/questions/65721909/how-to-get-bounding-box-coordinates-around-entire-text

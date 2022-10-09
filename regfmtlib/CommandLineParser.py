@@ -12,6 +12,11 @@ class CommandLineParser:
                                  default='-',
                                  help='output file')
 
+        self.parser.add_argument('-c', '--config',
+                                 action='store',
+                                 default='main.css',
+                                 help='CSS configuration file (default: main.css)')
+
         self.parser.add_argument('input', nargs='?', default='input.yaml',
                                  help='input register format YAML file (default: input.yaml)')
                 

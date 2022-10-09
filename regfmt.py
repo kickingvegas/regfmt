@@ -48,7 +48,7 @@ class RegisterFormat:
         drcChecker.subIndexFields(registerDB)
 
         # Render SVG
-        svgWriter = SVGWriter(registerDB, self.stdout)
+        svgWriter = SVGWriter(registerDB, self.stdout, configFileName=self.parsedArguments.config)
         svgWriter.writeSVG()
 
         # wrap up
