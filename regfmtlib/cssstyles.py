@@ -10,35 +10,53 @@ class FontStyle(Enum):
     italic = 'italic'
     oblique = 'oblique'
 
+class FontWeight(Enum):
+    normal = 'normal'
+    bold = 'bold'
+    bolder = 'bolder'
+    lighter = 'lighter'
+
 class TextStyle:
     def __init__(self,
-                 fontFamily: [str]=['Futura', 'Helvetica', 'Arial', 'Verdana', 'sans-serif'],
-                 fontSize: str = '12pt',
-                 fontStyle: FontStyle=FontStyle.normal,
-                 fill: str = 'black'):
+                 fontFamily: [str] = None,
+                 fontSize: str = None,
+                 fontStyle: FontStyle=None,
+                 fontWeight: str = None,
+                 fill: str = None):
         self.fontFamily = fontFamily
         self.fontSize = fontSize
         self.fontStyle = fontStyle
+        self.fontWeight = fontWeight
         self.fill = fill
 
 class RectStyle:
     def __init__(self,
-                 fill: str='none',
-                 stroke: str='black',
-                 strokeWidth: float=0.5,
-                 strokeLinecap: StrokeLinecap = StrokeLinecap.butt
+                 fill: str=None,
+                 stroke: str=None,
+                 strokeWidth: str=None,
+                 strokeLinecap: StrokeLinecap = None
                  ):
         # CSS color type
         self.fill: str = fill
         # CSS color type
         self.stroke: str = stroke
-        self.strokeWidth: float = strokeWidth
+        self.strokeWidth: str = strokeWidth
         self.strokeLinecap: StrokeLinecap = strokeLinecap
 
 class BaseStyle(TextStyle, RectStyle):
     def __init__(self):
-        TextStyle.__init__(self)
-        RectStyle.__init__(self)
+        TextStyle.__init__(self,
+                           fontFamily=['Futura', 'Helvetica', 'Arial', 'sans-serif'],
+                           fontSize='12pt',
+                           fontStyle=FontStyle.normal,
+                           fontWeight=FontWeight.normal,
+                           fill='black')
+
+        RectStyle.__init__(self,
+                           fill='none',
+                           stroke='black',
+                           strokeWidth='0.5',
+                           strokeLinecap=StrokeLinecap.butt)
 
 class StyleSheet:
     def __init__(self):

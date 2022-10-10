@@ -21,8 +21,9 @@ class SVGWriter:
         baseFontname = self.styleSheet.body.fontFamily[0]
         baseFontSize = self.styleSheet.body.fontSize
 
+        # TODO: figure out a cleaner mapping of CSS font size to ImageFont
         if 'pt' in baseFontSize:
-            baseFontSize = int(baseFontSize.replace('pt', ''))
+            baseFontSize = int(float(baseFontSize.replace('pt', '')))
 
         else:
             # give up

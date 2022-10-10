@@ -119,7 +119,7 @@ class Rect(Shape):
         rectElement.setAttribute('height', str(self.frame.size.height))
         rectElement.setAttribute('fill', self.style.fill)
         rectElement.setAttribute('stroke', self.style.stroke)
-        rectElement.setAttribute('stroke-width', str(self.style.strokeWidth))
+        rectElement.setAttribute('stroke-width', self.style.strokeWidth)
         rectElement.setAttribute('stroke-linecap', self.style.strokeLinecap.value)
         return rectElement
 
@@ -142,6 +142,8 @@ class Text(Shape):
         textElement.setAttribute('y', str(self.frame.origin.y))
         textElement.setAttribute('font-size', self.style.fontSize)
         textElement.setAttribute('font-family', ','.join(self.style.fontFamily))
+        textElement.setAttribute('font-style', self.style.fontStyle.value)
+        textElement.setAttribute('font-weight', self.style.fontWeight.value)
         textElement.setAttribute('text-anchor', self.textAnchor)
         textElement.setAttribute('fill', self.style.fill)
 
