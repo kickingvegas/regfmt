@@ -105,10 +105,11 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                 elif declaration.name == 'font-weight':
                     getattr(styleSheet, classNameMap[className]).fontWeight = extractEnum(declaration, FontWeight)
 
+
+def cascadeStyles(styleSheet):
     ## Cascade styles in StyleSheet
     # body > register, field if property.value is None
     # body > register-name, field-name, field-index if property.value is None
-
     # cascade rect style
     for obj in [styleSheet.register, styleSheet.field]:
         if getattr(obj, 'fill') is None:
@@ -119,7 +120,6 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
             setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
         if getattr(obj, 'strokeLinecap') is None:
             setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
-
     # cascade body text styles to child styles
     for obj in [styleSheet.registerName, styleSheet.fieldName, styleSheet.fieldIndex]:
         if getattr(obj, 'fontFamily') is None:
@@ -133,6 +133,7 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
         # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
         if getattr(obj, 'fill') is None:
             setattr(obj, 'fill', styleSheet.body.stroke)
+
 
 def extractEnum(declaration, enumClass):
     value = None

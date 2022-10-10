@@ -6,7 +6,7 @@ from PIL import ImageFont
 import tinycss2
 from regfmtlib.cssstyles import *
 from regfmtlib.svggeometry import *
-from regfmtlib.cssparser import parseCSS
+from regfmtlib.cssparser import parseCSS, cascadeStyles
 
 BASE_FONT_SIZE = 12
 
@@ -16,6 +16,7 @@ class SVGWriter:
         self.outfile = outfile
         self.styleSheet = StyleSheet()
         parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
+        cascadeStyles(self.styleSheet)
 
         baseFontname = self.styleSheet.body.fontFamily[0]
         baseFontSize = self.styleSheet.body.fontSize
