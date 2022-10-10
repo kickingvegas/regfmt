@@ -15,8 +15,7 @@ class SVGWriter:
         self.registerDB = registerDB
         self.outfile = outfile
         self.styleSheet = StyleSheet()
-        if configFileName:
-            parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
+        parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
 
         baseFontname = self.styleSheet.body.fontFamily[0]
         baseFontSize = self.styleSheet.body.fontSize

@@ -11,119 +11,128 @@ classNameMap = {
                 }
 
 def parseCSS(configFileName: str, styleSheet: StyleSheet):
+    if configFileName is None:
+        return
 
-    if configFileName is not None and os.path.exists(configFileName):
-        with open(configFileName, 'r') as configFile:
-            css = configFile.read()
-            rules = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
-            for rule in rules:
-                # Extract declarations
-                declarations = tinycss2.parse_declaration_list(rule.content,
-                                                               skip_comments=True,
-                                                               skip_whitespace=True)
+    if not os.path.exists(configFileName):
+        # TODO: throw error; file does not exist
+        return
 
-                filterDeclarationErrors(configFileName, declarations)
+    css = None
+    with open(configFileName, 'r') as configFile:
+        css = configFile.read()
 
-                className = rule.prelude[0].value
-                print(className)
+    if css is None:
+        # TODO: throw error; empty file
+        return
 
-                if className not in ('body', 'register', 'field', 'register-name', 'field-name', 'field-index'):
-                    # list of legal names
+    rules = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
+    for rule in rules:
+        # Extract declarations
+        declarations = tinycss2.parse_declaration_list(rule.content,
+                                                       skip_comments=True,
+                                                       skip_whitespace=True)
+
+        filterDeclarationErrors(configFileName, declarations)
+
+        className = rule.prelude[0].value
+        #print(className)
+
+        if className not in ('body', 'register', 'field', 'register-name', 'field-name', 'field-index'):
+            # list of legal names
+            continue
+
+        elif className == 'body':
+            legalAttributes = ('font-family', 'font-size', 'font-style', 'font-weight',
+                               'fill',
+                               'stroke', 'stroke-width', 'stroke-linecap')
+            for declaration in declarations:
+                if declaration.name not in legalAttributes:
                     continue
 
-                elif className == 'body':
-                    legalAttributes = ('font-family', 'font-size', 'font-style', 'font-weight',
-                                       'fill',
-                                       'stroke', 'stroke-width', 'stroke-linecap')
-                    for declaration in declarations:
-                        if declaration.name not in legalAttributes:
-                            continue
+                elif declaration.name == 'font-family':
+                    styleSheet.body.fontFamily = extractFontFamily(declaration)
 
-                        elif declaration.name == 'font-family':
-                            styleSheet.body.fontFamily = extractFontFamily(declaration)
+                elif declaration.name == 'font-size':
+                    styleSheet.body.fontSize = extractFontSize(declaration)
+                    styleSheet.registerName.fontSize = styleSheet.body.fontSize
+                    styleSheet.fieldName.fontSize = styleSheet.body.fontSize
+                    # TODO: deal with fieldIndex
 
-                        elif declaration.name == 'font-size':
-                            styleSheet.body.fontSize = extractFontSize(declaration)
-                            styleSheet.registerName.fontSize = styleSheet.body.fontSize
-                            styleSheet.fieldName.fontSize = styleSheet.body.fontSize
-                            # TODO: deal with fieldIndex
+                elif declaration.name == 'font-style':
+                    styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
 
-                        elif declaration.name == 'font-style':
-                            styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
+                elif declaration.name == 'font-weight':
+                    styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
 
-                        elif declaration.name == 'font-weight':
-                            styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
+                elif declaration.name == 'fill':
+                    styleSheet.body.fill = extractColor(declaration)
 
-                        elif declaration.name == 'fill':
-                            styleSheet.body.fill = extractColor(declaration)
+                elif declaration.name == 'stroke':
+                    styleSheet.body.stroke = extractColor(declaration)
 
-                        elif declaration.name == 'stroke':
-                            styleSheet.body.stroke = extractColor(declaration)
+                elif declaration.name == 'stroke-width':
+                    styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
 
-                        elif declaration.name == 'stroke-width':
-                            styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
+                elif declaration.name == 'stroke-linecap':
+                    styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
 
-                        elif declaration.name == 'stroke-linecap':
-                            styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
+        elif className in ('register', 'field'):
+            for declaration in declarations:
+                if declaration.name == 'fill':
+                    getattr(styleSheet, className).fill = extractColor(declaration)
 
+                elif declaration.name == 'stroke':
+                    getattr(styleSheet, className).stroke = extractColor(declaration)
 
+                elif declaration.name == 'stroke-width':
+                    getattr(styleSheet, className).strokeWidth = extractDimensionalValue(declaration)
 
-                elif className in ('register', 'field'):
-                    for declaration in declarations:
-                        if declaration.name == 'fill':
-                            getattr(styleSheet, className).fill = extractColor(declaration)
+                elif declaration.name == 'stroke-linecap':
+                    getattr(styleSheet, className).strokeLinecap = extractEnum(declaration, StrokeLinecap)
 
-                        elif declaration.name == 'stroke':
-                            getattr(styleSheet, className).stroke = extractColor(declaration)
+        elif className in ('register-name', 'field-name', 'field-index'):
+            for declaration in declarations:
+                if declaration.name == 'font-family':
+                    getattr(styleSheet, classNameMap[className]).fontFamily = extractFontFamily(declaration)
 
-                        elif declaration.name == 'stroke-width':
-                            getattr(styleSheet, className).strokeWidth = extractDimensionalValue(declaration)
+                elif declaration.name == 'font-size':
+                    getattr(styleSheet, classNameMap[className]).fontSize = extractFontSize(declaration)
 
-                        elif declaration.name == 'stroke-linecap':
-                            getattr(styleSheet, className).strokeLinecap = extractEnum(declaration, StrokeLinecap)
+                elif declaration.name == 'font-style':
+                    getattr(styleSheet, classNameMap[className]).fontStyle = extractEnum(declaration, FontStyle)
 
-                elif className in ('register-name', 'field-name', 'field-index'):
-                    for declaration in declarations:
-                        if declaration.name == 'font-family':
-                            getattr(styleSheet, classNameMap[className]).fontFamily = extractFontFamily(declaration)
+                elif declaration.name == 'font-weight':
+                    getattr(styleSheet, classNameMap[className]).fontWeight = extractEnum(declaration, FontWeight)
 
-                        elif declaration.name == 'font-size':
-                            getattr(styleSheet, classNameMap[className]).fontSize = extractFontSize(declaration)
+    ## Cascade styles in StyleSheet
+    # body > register, field if property.value is None
+    # body > register-name, field-name, field-index if property.value is None
 
-                        elif declaration.name == 'font-style':
-                            getattr(styleSheet, classNameMap[className]).fontStyle = extractEnum(declaration, FontStyle)
+    # cascade rect style
+    for obj in [styleSheet.register, styleSheet.field]:
+        if getattr(obj, 'fill') is None:
+            setattr(obj, 'fill', styleSheet.body.fill)
+        if getattr(obj, 'stroke') is None:
+            setattr(obj, 'stroke', styleSheet.body.stroke)
+        if getattr(obj, 'strokeWidth') is None:
+            setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
+        if getattr(obj, 'strokeLinecap') is None:
+            setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
 
-                        elif declaration.name == 'font-weight':
-                            getattr(styleSheet, classNameMap[className]).fontWeight = extractEnum(declaration, FontWeight)
+    # cascade body text styles to child styles
+    for obj in [styleSheet.registerName, styleSheet.fieldName, styleSheet.fieldIndex]:
+        if getattr(obj, 'fontFamily') is None:
+            setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
 
-            ## Cascade styles in StyleSheet
-            # body > register, field if property.value is None
-            # body > register-name, field-name, field-index if property.value is None
+        if getattr(obj, 'fontStyle') is None:
+            setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
 
-            # cascade rect style
-            for obj in [styleSheet.register, styleSheet.field]:
-                if getattr(obj, 'fill') is None:
-                    setattr(obj, 'fill', styleSheet.body.fill)
-                if getattr(obj, 'stroke') is None:
-                    setattr(obj, 'stroke', styleSheet.body.stroke)
-                if getattr(obj, 'strokeWidth') is None:
-                    setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
-                if getattr(obj, 'strokeLinecap') is None:
-                    setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
-
-            # cascade body text styles to child styles
-            for obj in [styleSheet.registerName, styleSheet.fieldName, styleSheet.fieldIndex]:
-                if getattr(obj, 'fontFamily') is None:
-                    setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
-
-                if getattr(obj, 'fontStyle') is None:
-                    setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
-
-                if getattr(obj, 'fontWeight') is None:
-                    setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
-                # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
-                if getattr(obj, 'fill') is None:
-                    setattr(obj, 'fill', styleSheet.body.stroke)
+        if getattr(obj, 'fontWeight') is None:
+            setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
+        # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
+        if getattr(obj, 'fill') is None:
+            setattr(obj, 'fill', styleSheet.body.stroke)
 
 def extractEnum(declaration, enumClass):
     value = None
