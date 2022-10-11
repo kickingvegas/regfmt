@@ -10,23 +10,29 @@ body {
     font-style: italic;
     font-weight: normal;
     fill: yellow;
-    stroke: red;
+    stroke: green;
     stroke-width: 0.5;
-    stroke-linecap: butt
+    stroke-linecap: butt;
 }
 
 register {
     fill: cyan;
     stroke: black;
     stroke-width: 0.1;
-    stroke-linecap: butt
+    stroke-linecap: butt;
 }
 
 field {
     fill: cyan;
     stroke: black;
     stroke-width: 0.3;
-    stroke-linecap: butt
+    stroke-linecap: butt;
+}
+
+field-name-line {
+    stroke: orange;
+    stroke-width: 1;
+    stroke-linecap: butt;
 }
 
 register-name {
@@ -40,7 +46,7 @@ field-name {
     font-style: normal;
     font-weight: normal;
     font-size: 12pt;
-    fill: black;
+    fill: blue;
 }
 
 field-index {

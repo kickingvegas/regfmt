@@ -48,7 +48,7 @@ registers:
       - name: A4
         width: 8
 
+
 layout:
-   registers: lr
-   register_name: left
-   field_name: center
+  field-name-align: center
+  register-layout: tb

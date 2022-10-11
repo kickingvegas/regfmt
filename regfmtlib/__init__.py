@@ -19,7 +19,7 @@ from .Constants import Constants
 from .Endian import Endian
 from .Field import Field
 from .Register import Register
-from .TopLevel import TopLevel
+from .TopLevel import FieldNameAlign, RegisterLayout, Layout, TopLevel
 from .DRCChecker import DRCChecker
 from .cssstyles import *
 from .svggeometry import *

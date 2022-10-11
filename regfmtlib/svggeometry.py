@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from regfmtlib.cssstyles import *
+from xml.dom.minidom import parseString
 
 from collections import UserList
 
@@ -89,8 +90,18 @@ class Frame:
         self.origin: Point = Point(x, y)
         self.size: Size = Size(width, height)
 
-class Shape:
+class Geometry:
+    def writeDOM(self, doc):
+        # virtual method; intended to be overridden
+        pass
+
+    def translate(self, dx: float=0.0, dy: float=0.0):
+        # virutal method; indented to be overwritten
+        pass
+
+class Shape(Geometry):
     def __init__(self, x: float = 0.0, y: float = 0.0, width: float = 0.0, height: float = 0.0):
+        Geometry.__init__(self)
         self.frame: Frame = Frame(x, y, width, height)
 
     def origin(self):
@@ -107,16 +118,42 @@ class Shape:
         self.frame.size.width = width
         self.frame.size.height = height
 
-    def writeDOM(self, doc):
-        # virtual method; intended to be overridden
-        pass
-
-    def translate(self, dx: float=0.0, dy: float=0.0):
+    def translate(self, dx: float = 0.0, dy: float = 0.0):
         T = translateTransform(dx, dy)
         V = vector2D(self.origin().x, self.origin().y)
         transformedV = matrixMult(T, V)
         newX, newY = coordinateFromVector2D(transformedV)
         self.setOrigin(newX, newY)
+
+
+class Line(Geometry):
+    def __init__(self,
+                 x1: float = 0.0,
+                 y1: float = 0.0,
+                 x2: float = 0.0,
+                 y2: float = 0.0,
+                 style: LineStyle = LineStyle()):
+        Geometry.__init__(self)
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+        self.style: LineStyle = style
+
+    def writeDOM(self, doc):
+        lineElement = doc.createElement('line')
+        lineElement.setAttribute('x1', str(self.x1))
+        lineElement.setAttribute('y1', str(self.y1))
+        lineElement.setAttribute('x2', str(self.x2))
+        lineElement.setAttribute('y2', str(self.y2))
+        lineElement.setAttribute('stroke', self.style.stroke)
+        lineElement.setAttribute('stroke-width', self.style.strokeWidth)
+        lineElement.setAttribute('stroke-linecap', self.style.strokeLinecap.value)
+        return lineElement
+
+    def translate(self, dx: float=0.0, dy: float=0.0):
+        pass
+
 
 class Rect(Shape):
     def __init__(self,
@@ -162,7 +199,14 @@ class Text(Shape):
         textElement.setAttribute('text-anchor', self.textAnchor)
         textElement.setAttribute('fill', self.style.fill)
 
-        textNode = doc.createTextNode(self.text)
+        if '<sub>' in self.text:
+            # don't think this is going to work.
+            newText = '<p>{}</p>'.format(self.text)
+            xmlFragment = parseString(newText)
+            textNode = xmlFragment.documentElement
+
+        else:
+            textNode = doc.createTextNode(self.text)
         textElement.appendChild(textNode)
         return textElement
 

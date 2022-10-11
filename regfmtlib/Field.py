@@ -22,5 +22,7 @@ class Field:
 
         # !!!: Note config should already be validated.
         if config:
-            self.name = config['name']
-            self.width = config['width']
+            if 'name' in config:
+                self.name = config['name']
+            if 'width' in config:
+                self.width = config['width']

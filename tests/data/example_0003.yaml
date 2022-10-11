@@ -1,0 +1,35 @@
+##
+# Example YAML file for regfmt
+# Copyright © 2022 Charles Y. Choi
+#
+# Single 8-bit register with 8 1-bit fields. 
+
+width: 8
+endian: bigBit
+
+registers:
+  - name: Output Configuration
+    fields:
+      - width: 1
+        name: OBF_f
+
+      - width: 1
+        name: INTE_A
+
+      - width: 2
+        name: I/O
+
+      - width: 1
+        name: INTR_A (Interrupt A)
+
+      - width: 1
+        name: INTE_B 
+
+      - width: 1
+        name: OBF_B (Output Buffer B)
+
+      - width: 1
+        name: INTR_B (Interrupt B)
+
+layout:
+  field-name-align: stair-left

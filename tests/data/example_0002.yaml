@@ -1,0 +1,40 @@
+##
+# Example YAML file for regfmt
+# Copyright © 2022 Charles Y. Choi
+#
+# Single 8-bit register with each bit a field, no field names assigned.
+
+width: 8
+endian: bigBit
+
+registers:
+  - name: Control Register 1
+    fields:
+      - width: 1
+        name: null
+
+      - width: 1
+        name: null
+
+      - width: 1
+        name: null
+
+      - width: 1
+        name: null
+        
+      - width: 1
+        name: null
+
+      - width: 1
+        name: null
+
+      - width: 1
+        name: null
+
+      - width: 1
+        name: null
+        
+
+layout:
+  field-name-align: stair-right
+  register-layout: tb

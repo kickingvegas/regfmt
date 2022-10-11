@@ -23,7 +23,8 @@ from regfmtlib.cssstyles import *
 classNameMap = {
                 'register-name': 'registerName',
                 'field-name': 'fieldName',
-                'field-index': 'fieldIndex'
+                'field-index': 'fieldIndex',
+                'field-name-line': 'fieldNameLine'
                 }
 
 def parseCSS(configFileName: str, styleSheet: StyleSheet):
@@ -52,7 +53,8 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
         className = rule.prelude[0].value
         #print(className)
 
-        if className not in ('body', 'register', 'field', 'register-name', 'field-name', 'field-index'):
+        if className not in ('body', 'register', 'field', 'register-name',
+                             'field-name', 'field-index', 'field-name-line'):
             # list of legal names
             continue
 
@@ -117,6 +119,18 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
 
                 elif declaration.name == 'stroke-linecap':
                     getattr(styleSheet, className).strokeLinecap = extractEnum(declaration, StrokeLinecap)
+
+        elif className == 'field-name-line':
+            for declaration in declarations:
+                if declaration.name == 'stroke':
+                    getattr(styleSheet, classNameMap[className]).stroke = extractColor(declaration)
+
+                elif declaration.name == 'stroke-width':
+                    getattr(styleSheet, classNameMap[className]).strokeWidth = extractDimensionalValue(declaration)
+
+                elif declaration.name == 'stroke-linecap':
+                    getattr(styleSheet, classNameMap[className]).strokeLinecap = extractEnum(declaration, StrokeLinecap)
+
 
         elif className in ('register-name', 'field-name', 'field-index'):
             for declaration in declarations:

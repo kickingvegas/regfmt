@@ -15,15 +15,18 @@
 
 from enum import Enum
 
+
 class StrokeLinecap(Enum):
     butt = 'butt'
     round = 'round'
     square = 'square'
 
+
 class FontStyle(Enum):
     normal = 'normal'
     italic = 'italic'
     oblique = 'oblique'
+
 
 class FontWeight(Enum):
     normal = 'normal'
@@ -31,12 +34,13 @@ class FontWeight(Enum):
     bolder = 'bolder'
     lighter = 'lighter'
 
+
 class TextStyle:
     def __init__(self,
                  fontFamily: [str] = None,
                  fontSize: str = None,
-                 fontStyle: FontStyle=None,
-                 fontWeight: str = None,
+                 fontStyle: FontStyle = None,
+                 fontWeight: FontWeight = None,
                  fill: str = None):
         self.fontFamily = fontFamily
         self.fontSize = fontSize
@@ -44,11 +48,23 @@ class TextStyle:
         self.fontWeight = fontWeight
         self.fill = fill
 
+
+class LineStyle:
+    def __init__(self,
+                 stroke: str = 'grey',
+                 strokeWidth: str = '0.5',
+                 strokeLinecap: StrokeLinecap = StrokeLinecap.butt
+                 ):
+        self.stroke: str = stroke
+        self.strokeWidth: str = strokeWidth
+        self.strokeLinecap: StrokeLinecap = strokeLinecap
+
+
 class RectStyle:
     def __init__(self,
-                 fill: str=None,
-                 stroke: str=None,
-                 strokeWidth: str=None,
+                 fill: str = None,
+                 stroke: str = None,
+                 strokeWidth: str = None,
                  strokeLinecap: StrokeLinecap = None
                  ):
         # TODO: support fill opacity
@@ -58,6 +74,7 @@ class RectStyle:
         self.stroke: str = stroke
         self.strokeWidth: str = strokeWidth
         self.strokeLinecap: StrokeLinecap = strokeLinecap
+
 
 class BaseStyle(TextStyle, RectStyle):
     def __init__(self):
@@ -74,6 +91,7 @@ class BaseStyle(TextStyle, RectStyle):
                            strokeWidth='0.5',
                            strokeLinecap=StrokeLinecap.butt)
 
+
 class StyleSheet:
     def __init__(self):
         self.body = BaseStyle()
@@ -82,3 +100,4 @@ class StyleSheet:
         self.registerName = TextStyle()
         self.fieldName = TextStyle()
         self.fieldIndex = TextStyle(fontSize='10pt')
+        self.fieldNameLine = LineStyle()
