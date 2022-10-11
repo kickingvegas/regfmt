@@ -1,8 +1,0 @@
-type: object
-properties: 
-  - width:
-      type: number
-    name:
-      type: string
-      
-      
