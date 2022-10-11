@@ -10,6 +10,24 @@ from regfmtlib.cssparser import parseCSS, cascadeStyles
 
 BASE_FONT_SIZE = 12
 
+def cssFontToImageFont(fontFamily, fontSize):
+    baseFontname = fontFamily
+    baseFontSize = fontSize
+
+    # TODO: figure out a cleaner mapping of CSS font size to ImageFont
+    if 'pt' in baseFontSize:
+        baseFontSize = int(float(baseFontSize.replace('pt', '')))
+
+    else:
+        try:
+            baseFontSize = int(float(round(baseFontSize)))
+        except:
+            sys.stderr.write('WARNING: font-size value of "{}" is unsupported. Coercing font size value to {}.\n'.format(fontSize, BASE_FONT_SIZE))
+            baseFontSize = BASE_FONT_SIZE
+
+    result = ImageFont.truetype(baseFontname, baseFontSize)
+    return result
+
 class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile, configFileName=None):
         self.registerDB = registerDB
@@ -17,19 +35,8 @@ class SVGWriter:
         self.styleSheet = StyleSheet()
         parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
         cascadeStyles(self.styleSheet)
-
-        baseFontname = self.styleSheet.body.fontFamily[0]
-        baseFontSize = self.styleSheet.body.fontSize
-
-        # TODO: figure out a cleaner mapping of CSS font size to ImageFont
-        if 'pt' in baseFontSize:
-            baseFontSize = int(float(baseFontSize.replace('pt', '')))
-
-        else:
-            # give up
-            baseFontSize = 12
-
-        self.font = ImageFont.truetype(baseFontname, baseFontSize)
+        self.font = cssFontToImageFont(fontFamily=self.styleSheet.body.fontFamily[0],
+                                       fontSize=self.styleSheet.body.fontSize)
 
     def createDocument(self):
         dom = getDOMImplementation()

@@ -54,9 +54,9 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                     styleSheet.body.fontFamily = extractFontFamily(declaration)
 
                 elif declaration.name == 'font-size':
-                    styleSheet.body.fontSize = extractFontSize(declaration)
-                    styleSheet.registerName.fontSize = styleSheet.body.fontSize
-                    styleSheet.fieldName.fontSize = styleSheet.body.fontSize
+                    styleSheet.body.fontSize = extractDimensionalValue(declaration)
+                    #styleSheet.registerName.fontSize = styleSheet.body.fontSize
+                    #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
                     # TODO: deal with fieldIndex
 
                 elif declaration.name == 'font-style':
@@ -124,12 +124,12 @@ def cascadeStyles(styleSheet):
     for obj in [styleSheet.registerName, styleSheet.fieldName, styleSheet.fieldIndex]:
         if getattr(obj, 'fontFamily') is None:
             setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
-
         if getattr(obj, 'fontStyle') is None:
             setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
-
         if getattr(obj, 'fontWeight') is None:
             setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
+        if getattr(obj, 'fontSize') is None:
+            setattr(obj, 'fontSize', styleSheet.body.fontSize)
         # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
         if getattr(obj, 'fill') is None:
             setattr(obj, 'fill', styleSheet.body.stroke)
@@ -187,12 +187,17 @@ def extractColor(declaration):
 def extractFontSize(declaration):
     tokens = list(
         # TODO: handle just number
-        filter(lambda x: isinstance(x, tinycss2.ast.DimensionToken), declaration.value))
+        filter(lambda x: (isinstance(x, tinycss2.ast.DimensionToken) or
+                          isinstance(x, tinycss2.ast.NumberToken)),
+                          declaration.value))
     if len(tokens) == 0:
         # TODO: throw error
         pass
     token = tokens[0]
-    value = '{}{}'.format(token.value, token.unit)
+    if isinstance(token, tinycss2.ast.DimensionToken):
+        value = '{}{}'.format(token.value, token.unit)
+    else:
+        value = str(token.value)
     return value
 
 def extractFontFamily(declaration):
