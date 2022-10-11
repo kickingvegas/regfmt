@@ -1,10 +1,8 @@
-import os
+import sys
 from xml.dom.minidom import getDOMImplementation
 from regfmtlib import TopLevel
 from regfmtlib import Register
 from PIL import ImageFont
-import tinycss2
-from regfmtlib.cssstyles import *
 from regfmtlib.svggeometry import *
 from regfmtlib.cssparser import parseCSS, cascadeStyles
 
@@ -14,7 +12,8 @@ def cssFontToImageFont(fontFamily, fontSize):
     baseFontname = fontFamily
     baseFontSize = fontSize
 
-    # TODO: figure out a cleaner mapping of CSS font size to ImageFont
+    # !!!: only pt is supported for geometry calculations
+
     if 'pt' in baseFontSize:
         baseFontSize = int(float(baseFontSize.replace('pt', '')))
 
@@ -22,7 +21,10 @@ def cssFontToImageFont(fontFamily, fontSize):
         try:
             baseFontSize = int(float(round(baseFontSize)))
         except:
-            sys.stderr.write('WARNING: font-size value of "{}" is unsupported. Coercing font size value to {}.\n'.format(fontSize, BASE_FONT_SIZE))
+            message = ('WARNING: body font-size specification of "{}" is unsupported in '
+                       'CSS file for sizing the geometry of register fields. '
+                       'Coercing font size value to {}pt.\n')
+            sys.stderr.write(message.format(fontSize, BASE_FONT_SIZE))
             baseFontSize = BASE_FONT_SIZE
 
     result = ImageFont.truetype(baseFontname, baseFontSize)

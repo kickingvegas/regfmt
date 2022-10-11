@@ -36,6 +36,7 @@ class RectStyle:
                  strokeWidth: str=None,
                  strokeLinecap: StrokeLinecap = None
                  ):
+        # TODO: support fill opacity
         # CSS color type
         self.fill: str = fill
         # CSS color type
