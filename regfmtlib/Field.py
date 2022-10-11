@@ -20,10 +20,7 @@ class Field:
         self.leftIndex: int = None
         self.rightIndex: int = None
 
+        # !!!: Note config should already be validated.
         if config:
             self.name = config['name']
-            if 'width' in config:
-                self.width = config['width']
-            else:
-                # TODO: throw error
-                pass
+            self.width = config['width']

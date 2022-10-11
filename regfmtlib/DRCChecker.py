@@ -41,8 +41,6 @@ class DRCChecker:
             if sum != register.width:
                 message = 'DRC Violation: sum total of widths of fields ({0}) must equal the register width ({1}) for register {2}\n'.format(sum, register.width, register.name)
                 self.errors.append(message)
-            else:
-                sys.stderr.write(repr(widths) + '\n')
 
         for message in self.errors:
             sys.stderr.write(message)
@@ -84,8 +82,6 @@ class DRCChecker:
                     count += (field.width - 1)
                     field.leftIndex = count
                     #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
-
-            #print('###')
 
 
 

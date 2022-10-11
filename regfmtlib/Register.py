@@ -22,7 +22,7 @@ DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
 class Register:
     def __init__(self, parent, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigByte):
         self.name: str = None
-        self.width: int = DEFAULT_WIDTH
+        self.width: int = width
         self.endian: Endian = endian
         self.fields: [Field] = None
         # parent is type TopLevel

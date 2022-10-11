@@ -16,6 +16,7 @@
 import unittest
 
 from regfmtlib import CommandLineParser
+from regfmt import RegisterFormat
 
 class TestCommandLineParser(unittest.TestCase):
     def test_version(self):
@@ -34,6 +35,11 @@ class TestCommandLineParser(unittest.TestCase):
         clp = CommandLineParser()
         parsedArgs = clp.parser.parse_args([])
         self.assertEqual(parsedArgs.input, control)
-        
+
+    def test_run(self):
+        clp = CommandLineParser()
+        parsedArgs = clp.parser.parse_args(['-o', 'tests/output/example_0001.svg', 'tests/data/example_0001.yaml'])
+        RegisterFormat(parsedArgs).run()
+
 if __name__ == '__main__':
     unittest.main()

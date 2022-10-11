@@ -1,0 +1,54 @@
+##
+# Example YAML file for regfmt
+# Copyright © 2022 Charles Y. Choi
+
+width: 32
+endian: bigBit
+
+registers:
+  - name: R1
+    fields:
+      - width: 8
+        name: A4
+
+      - width: 8
+        name: A3
+
+      - width: 8
+        name: A2
+
+      - width: 8
+        name: A1
+
+  - name: R2
+    fields:
+      - name: A1
+        width: 8
+
+      - name: A2
+        width: 8
+
+      - name: A3
+        width: 8
+
+      - name: A4
+        width: 8
+
+  - name: R3
+    fields:
+      - name: A1
+        width: 8
+
+      - name: A2
+        width: 8
+
+      - name: A3
+        width: 8
+
+      - name: A4
+        width: 8
+
+layout:
+   registers: lr
+   register_name: left
+   field_name: center

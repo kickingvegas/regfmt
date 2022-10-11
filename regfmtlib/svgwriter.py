@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import sys
+import os
+import errno
 from xml.dom.minidom import getDOMImplementation
 from regfmtlib import TopLevel
 from regfmtlib import Register
@@ -50,7 +52,19 @@ class SVGWriter:
         self.registerDB = registerDB
         self.outfile = outfile
         self.styleSheet = StyleSheet()
-        parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
+        try:
+            parseCSS(configFileName=configFileName, styleSheet=self.styleSheet)
+        except FileNotFoundError as err:
+            message = 'ERROR: {}: "{}"  Exiting…\n'.format(err.strerror, err.filename)
+            sys.stderr.write(message)
+            sys.exit(err.errno)
+
+        except ValueError as err:
+            message = 'ERROR: {} Exiting…\n'.format(err.args[0])
+            sys.stderr.write(message)
+            sys.exit(1)
+
+
         cascadeStyles(self.styleSheet)
         self.font = cssFontToImageFont(fontFamily=self.styleSheet.body.fontFamily[0],
                                        fontSize=self.styleSheet.body.fontSize)
