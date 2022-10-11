@@ -15,6 +15,7 @@
 
 import os
 import sys
+import errno
 
 import tinycss2
 from regfmtlib.cssstyles import *
@@ -30,16 +31,14 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
         return
 
     if not os.path.exists(configFileName):
-        # TODO: throw error; file does not exist
-        return
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), configFileName)
 
     css = None
     with open(configFileName, 'r') as configFile:
         css = configFile.read()
 
-    if css is None:
-        # TODO: throw error; empty file
-        return
+    if css == '':
+        raise ValueError('CSS file "{}" is empty.'.format(configFileName))
 
     rules = tinycss2.parse_stylesheet(css, skip_comments=True, skip_whitespace=True)
     for rule in rules:
@@ -61,36 +60,49 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
             legalAttributes = ('font-family', 'font-size', 'font-style', 'font-weight',
                                'fill',
                                'stroke', 'stroke-width', 'stroke-linecap')
-            for declaration in declarations:
-                if declaration.name not in legalAttributes:
-                    continue
 
-                elif declaration.name == 'font-family':
-                    styleSheet.body.fontFamily = extractFontFamily(declaration)
+            try:
+                for declaration in declarations:
+                    if declaration.name not in legalAttributes:
+                        continue
 
-                elif declaration.name == 'font-size':
-                    styleSheet.body.fontSize = extractDimensionalValue(declaration)
-                    #styleSheet.registerName.fontSize = styleSheet.body.fontSize
-                    #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
-                    # TODO: deal with fieldIndex
+                    elif declaration.name == 'font-family':
+                        styleSheet.body.fontFamily = extractFontFamily(declaration)
 
-                elif declaration.name == 'font-style':
-                    styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
+                    elif declaration.name == 'font-size':
+                        styleSheet.body.fontSize = extractDimensionalValue(declaration)
+                        #styleSheet.registerName.fontSize = styleSheet.body.fontSize
+                        #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
+                        # TODO: deal with fieldIndex
 
-                elif declaration.name == 'font-weight':
-                    styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
+                    elif declaration.name == 'font-style':
+                        styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
 
-                elif declaration.name == 'fill':
-                    styleSheet.body.fill = extractColor(declaration)
+                    elif declaration.name == 'font-weight':
+                        styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
 
-                elif declaration.name == 'stroke':
-                    styleSheet.body.stroke = extractColor(declaration)
+                    elif declaration.name == 'fill':
+                        styleSheet.body.fill = extractColor(declaration)
 
-                elif declaration.name == 'stroke-width':
-                    styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
+                    elif declaration.name == 'stroke':
+                        styleSheet.body.stroke = extractColor(declaration)
 
-                elif declaration.name == 'stroke-linecap':
-                    styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
+                    elif declaration.name == 'stroke-width':
+                        styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
+
+                    elif declaration.name == 'stroke-linecap':
+                        styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
+
+            except ValueError as err:
+                if len(err.args) and isinstance(err.args[0], tinycss2.ast.Declaration):
+                    errorDeclaration: tinycss2.ast.Declaration = err.args[0]
+                    errorMessage: str = err.args[1]
+                    message = 'ERROR: {} (line {}, row {}): {}\n'.format(configFileName,
+                                                                       errorDeclaration.source_line,
+                                                                       errorDeclaration.source_column,
+                                                                       errorMessage)
+                    sys.stderr.write(message)
+                    sys.exit(1)
 
         elif className in ('register', 'field'):
             for declaration in declarations:
@@ -155,14 +167,18 @@ def extractEnum(declaration, enumClass):
     tokens = list(
         filter(lambda x: isinstance(x, tinycss2.ast.IdentToken), declaration.value))
     if len(tokens) == 0:
-        # TODO: throw error
-        pass
+        raise ValueError(declaration, '{} has no value.'.format(declaration.name))
+
     token = tokens[0]
     if token.value in [x.value for x in list(enumClass)]:
         value = token.lower_value
     else:
-        # TODO: throw error
-        pass
+        legalValues = [x.value for x in list(enumClass)]
+        message = '{} has a non-conformant value "{}". Legal values are {}'.format(declaration.name,
+                                                                                   token.value,
+                                                                                   legalValues)
+        raise ValueError(declaration, message)
+
     return enumClass[token.value]
 
 def extractDimensionalValue(declaration):
@@ -173,8 +189,8 @@ def extractDimensionalValue(declaration):
                           isinstance(x, tinycss2.ast.NumberToken)),
                           declaration.value))
     if len(tokens) == 0:
-        # TODO: throw error
-        pass
+        raise ValueError(declaration, '{} has no value.'.format(declaration.name))
+
     token = tokens[0]
     if isinstance(token, tinycss2.ast.IdentToken):
         value = token.lower_value
@@ -190,8 +206,8 @@ def extractColor(declaration):
                           isinstance(x, tinycss2.ast.HashToken)),
                declaration.value))
     if len(tokens) == 0:
-        # TODO: throw error
-        pass
+        raise ValueError(declaration, '{} has no value.'.format(declaration.name))
+
     token = tokens[0]
     if isinstance(token, tinycss2.ast.IdentToken):
         value = token.lower_value
@@ -201,13 +217,12 @@ def extractColor(declaration):
 
 def extractFontSize(declaration):
     tokens = list(
-        # TODO: handle just number
         filter(lambda x: (isinstance(x, tinycss2.ast.DimensionToken) or
                           isinstance(x, tinycss2.ast.NumberToken)),
                           declaration.value))
     if len(tokens) == 0:
-        # TODO: throw error
-        pass
+        raise ValueError(declaration, '{} has no value.'.format(declaration.name))
+
     token = tokens[0]
     if isinstance(token, tinycss2.ast.DimensionToken):
         value = '{}{}'.format(token.value, token.unit)

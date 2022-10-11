@@ -1,0 +1,52 @@
+/**
+ regfmt example CSS file
+
+ Copyright © 2022 Charles Y. Choi
+ */
+
+body {
+    font-family: Futura, Helvetica, Arial, Verdana;
+    font-size: 12pt;
+    font-style: italic;
+    font-weight: normal;
+    fill: yellow;
+    stroke: red;
+    stroke-width: 0.5;
+    stroke-linecap: butt
+}
+
+register {
+    fill: cyan;
+    stroke: black;
+    stroke-width: 0.1;
+    stroke-linecap: butt
+}
+
+field {
+    fill: cyan;
+    stroke: black;
+    stroke-width: 0.3;
+    stroke-linecap: butt
+}
+
+register-name {
+    font-family: Times, serif;
+    font-size: 12pt;
+    font-style: italic;
+    fill: black;
+}
+
+field-name {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12pt;
+    fill: black;
+}
+
+field-index {
+    font-size: 9pt;
+    font-family: Times;
+    font-style: italic;
+    font-weight: normal;
+    fill: blue;
+}

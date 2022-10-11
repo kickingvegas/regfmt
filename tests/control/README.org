@@ -1,0 +1,6 @@
+* Control Directory
+This directory holds files that are to be used by tests for control comparisons.
+
+
+
+

@@ -7,4 +7,14 @@ help:
 test:
 	python -m unittest discover
 
-.PHONY: help test
+clean:
+	find . -name '*.*~' -print -exec rm {} \;
+
+
+deep-clean: clean
+	find . -name '__pycache__' -not -path "./.venv/*" -print | xargs rm -rf 
+
+clean-tests:
+	make -C tests clean
+
+.PHONY: help test clean deep-clean clean-tests
