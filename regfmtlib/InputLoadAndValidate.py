@@ -36,23 +36,10 @@ properties:
   layout:
     type: object
     properties:
-      registers:
-        enum:
-          - tb
-          - lr
-
-      register_name:
-        enum:
-          - left
-          - right
-          - top
-          - bottom
-          - null
-      field_name:
+      field-name-align:
         enum:
           - center
-          - left
-          - right
+          - stair-left
 
 required:
   - width
@@ -101,6 +88,7 @@ $defs:
       - fields
 """
 
+
 class InputLoadAndValidate:
     def __init__(self, parsedArguments):
         self.parsedArguments = parsedArguments
@@ -117,17 +105,24 @@ class InputLoadAndValidate:
                 sys.exit(1)
 
         except exceptions.ValidationError as err:
-            print(err.json_path)
-            print(err.message)
-            print(err.path)
-            print(err.relative_path)
-            print(err.absolute_path)
-            print(err.context)
-            print(err.cause)
-            print(err.instance)
-            print(err.validator)
-            print(err.schema_path)
-            print(dir(err))
+            # TODO: implement YAML ValidationError handling
+            message = 'ERROR: YAML file "{}" in path "{}": {}'
+            sys.stderr.write(message.format(self.parsedArguments.input,
+                                            err.json_path,
+                                            err.message))
+            sys.exit(1)
+
+            # print(err.json_path)
+            # print(err.message)
+            # print(err.path)
+            # print(err.relative_path)
+            # print(err.absolute_path)
+            # print(err.context)
+            # print(err.cause)
+            # print(err.instance)
+            # print(err.validator)
+            # print(err.schema_path)
+            # print(dir(err))
 
         return inputYAML
         
@@ -147,6 +142,5 @@ class InputLoadAndValidate:
         except ScannerError as err:
             sys.stderr.write('ERROR: {0}\n'.format(err))
             sys.exit(1)
-
 
         return yamlConfig

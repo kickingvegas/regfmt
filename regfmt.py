@@ -24,13 +24,13 @@ from regfmtlib import SVGWriter
 
 VERSION = '0.1.0'
 
+
 class RegisterFormat:
     def __init__(self, parsedArguments):
         self.version = VERSION
         self.stdout = sys.stdout
         self.stdin = sys.stdin
         self.stderr = sys.stderr
-        
         self.parsedArguments = parsedArguments
 
         if parsedArguments.version:
@@ -42,15 +42,17 @@ class RegisterFormat:
             self.stdout = outfile
 
         if not os.path.exists(parsedArguments.input):
-            sys.stderr.write('ERROR: file "{0}" does not exist. Please specify an input file.\n'.format(parsedArguments.input))
+            message = ('ERROR: file "{0}" does not exist. '
+                       'Please specify an input file.\n')
+            sys.stderr.write(message.format(parsedArguments.input))
             sys.exit(1)
-                    
+
     def run(self):
         # Load and validate input YAML
         loader = InputLoadAndValidate(self.parsedArguments)
         inputYAML = loader.loadAndValidate()
-        #print(inputYAML)
-        
+        # print(inputYAML)
+
         # Deserialize input YAML into native object DB
         registerDB = TopLevel(config=inputYAML)
 
@@ -60,12 +62,15 @@ class RegisterFormat:
         drcChecker.subIndexFields(registerDB)
 
         # Render SVG
-        svgWriter = SVGWriter(registerDB, self.stdout, configFileName=self.parsedArguments.config)
+        svgWriter = SVGWriter(registerDB,
+                              self.stdout,
+                              configFileName=self.parsedArguments.config)
         svgWriter.writeSVG()
 
         # wrap up
         if self.stdout != sys.stdout:
             self.stdout.close()
+
 
 if __name__ == '__main__':
     app = RegisterFormat(CommandLineParser().run())

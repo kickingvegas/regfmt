@@ -16,14 +16,34 @@
 from regfmtlib import Constants
 from regfmtlib import Register
 from regfmtlib import Endian
+from enum import Enum
 
 DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
 
+
+class FieldNameAlign(Enum):
+    center = "center"
+    stairLeft = 'stair-left'
+
+
+class RegisterLayout(Enum):
+    tb = "tb"
+
+
+class Layout:
+    def __init__(self,
+                 fieldNameAlign: FieldNameAlign = FieldNameAlign.center,
+                 registerLayout: RegisterLayout = RegisterLayout.tb):
+        self.fieldNameAlign: FieldNameAlign = fieldNameAlign
+        self.registerLayout: RegisterLayout = registerLayout
+
+
 class TopLevel:
-    def __init__(self, config=None):
-        self.width: int = DEFAULT_WIDTH
-        self.endian: Endian = Endian.bigByte
+    def __init__(self, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigByte):
+        self.width: int = width
+        self.endian: Endian = endian
         self.registers: [Register] = []
+        self.layout = Layout()
 
         if config:
             self.width = config['width']
@@ -32,3 +52,10 @@ class TopLevel:
             if 'registers' in config:
                 for registerConfig in config['registers']:
                     self.registers.append(Register(self, registerConfig))
+
+            if 'layout' in config:
+                if 'field-name-align' in config['layout']:
+                    self.layout.fieldNameAlign = FieldNameAlign(config['layout']['field-name-align'])
+
+                if 'register-layout' in config['layout']:
+                    self.layout.registerLayout = RegisterLayout(config['layout']['register-layout'])
