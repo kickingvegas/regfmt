@@ -7,17 +7,18 @@
 body {
     font-family: Futura, Helvetica, Arial, Verdana;
     font-size: 12pt;
-    font-style: italic;
+    font-style: normal;
     font-weight: normal;
-    fill: yellow;
+    fill: white;
     stroke: green;
     stroke-width: 0.5;
     stroke-linecap: butt;
 }
 
+
 register {
-    fill: cyan;
-    stroke: black;
+    fill: chiffon;
+    stroke: magenta;
     stroke-width: 0.1;
     stroke-linecap: butt;
 }
@@ -36,13 +37,14 @@ field-name-line {
 }
 
 register-name {
-    font-family: Times, serif;
+    font-family: Chalkduster, serif;
     font-size: 12pt;
     font-style: italic;
     fill: black;
 }
 
 field-name {
+    font-family: Helvetica;
     font-style: normal;
     font-weight: normal;
     font-size: 12pt;
@@ -52,6 +54,14 @@ field-name {
 field-index {
     font-size: 9pt;
     font-family: Times;
+    font-style: italic;
+    font-weight: normal;
+    fill: blue;
+}
+
+
+field-index {
+    font-size: 10pt;
     font-style: italic;
     font-weight: normal;
     fill: blue;
