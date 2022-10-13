@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300">
   <text x="778.0" y="26.5" font-size="12pt" font-family="Futura,Helvetica,Arial,sans-serif" font-style="normal" font-weight="normal" text-anchor="start" fill="black">R1</text>
   <rect x="0.0" y="0.0" width="192" height="44" fill="none" stroke="black" stroke-width="0.5" stroke-linecap="butt"/>
   <text x="96.0" y="29.5" font-size="12pt" font-family="Futura,Helvetica,Arial,sans-serif" font-style="normal" font-weight="normal" text-anchor="middle" fill="black">A4</text>
