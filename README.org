@@ -1,6 +1,84 @@
 * regfmt
+/regfmt/ is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however it is re-imagined using contemporary file formats.
 
-This is a work in progress. 
+** Features
+- Modern configuration input file format (YAML)
+- SVG output
+- CSS styling support
+
+
+
+* Examples
+
+#+begin_src shell
+  $ regfmt -o register.svg register.yaml
+#+end_src
+
+
+Given a file ~register.yaml~ with the following contents.
+
+#+begin_src yaml
+##
+# Example YAML file for regfmt
+
+width: 32
+endian: bigBit
+
+registers:
+  - name: R1
+    fields:
+      - width: 8
+        name: A4
+
+      - width: 8
+        name: A3
+
+      - width: 8
+        name: A2
+
+      - width: 8
+        name: A1
+
+  - name: R2
+    fields:
+      - name: A1
+        width: 8
+
+      - name: A2
+        width: 8
+
+      - name: A3
+        width: 8
+
+      - name: A4
+        width: 8
+
+  - name: R3
+    fields:
+      - name: A1
+        width: 8
+
+      - name: A2
+        width: 8
+
+      - name: A3
+        width: 8
+
+      - name: A4
+        width: 8
+
+layout:
+  field-name-align: center
+#+end_src
+
+[[./tests/control/example0001.svg]]
+
+
+* Install
+
+* YAML Specification
+
+* CSS Specification
 
 * License
 Copyright © 2022 Charles Y. Choi
@@ -10,4 +88,3 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
