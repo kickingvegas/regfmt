@@ -146,34 +146,68 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                 elif declaration.name == 'font-weight':
                     getattr(styleSheet, classNameMap[className]).fontWeight = extractEnum(declaration, FontWeight)
 
+                elif declaration.name == 'fill':
+                    getattr(styleSheet, classNameMap[className]).fill = extractColor(declaration)
+
 
 def cascadeStyles(styleSheet):
     ## Cascade styles in StyleSheet
     # body > register, field if property.value is None
     # body > register-name, field-name, field-index if property.value is None
     # cascade rect style
-    for obj in [styleSheet.register, styleSheet.field]:
-        if getattr(obj, 'fill') is None:
-            setattr(obj, 'fill', styleSheet.body.fill)
-        if getattr(obj, 'stroke') is None:
-            setattr(obj, 'stroke', styleSheet.body.stroke)
-        if getattr(obj, 'strokeWidth') is None:
-            setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
-        if getattr(obj, 'strokeLinecap') is None:
-            setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
-    # cascade body text styles to child styles
-    for obj in [styleSheet.registerName, styleSheet.fieldName, styleSheet.fieldIndex]:
+
+    obj = styleSheet.register
+    if getattr(obj, 'fill') is None:
+        setattr(obj, 'fill', styleSheet.body.fill)
+    if getattr(obj, 'stroke') is None:
+        setattr(obj, 'stroke', styleSheet.body.stroke)
+    if getattr(obj, 'strokeWidth') is None:
+        setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
+    if getattr(obj, 'strokeLinecap') is None:
+        setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
+
+    obj = styleSheet.field
+    if getattr(obj, 'fill') is None:
+        setattr(obj, 'fill', styleSheet.register.fill)
+    if getattr(obj, 'stroke') is None:
+        setattr(obj, 'stroke', styleSheet.register.stroke)
+    if getattr(obj, 'strokeWidth') is None:
+        setattr(obj, 'strokeWidth', styleSheet.register.strokeWidth)
+    if getattr(obj, 'strokeLinecap') is None:
+        setattr(obj, 'strokeLinecap', styleSheet.register.strokeLinecap)
+
+    obj = styleSheet.fieldNameLine
+    if getattr(obj, 'stroke') is None:
+        setattr(obj, 'stroke', styleSheet.field.stoke)
+    if getattr(obj, 'strokeWidth') is None:
+        setattr(obj, 'strokeWidth', styleSheet.field.strokeWidth)
+    if getattr(obj, 'strokeLinecap') is None:
+        setattr(obj, 'strokeLinecap', styleSheet.field.xstrokeLinecap)
+
+    obj = styleSheet.registerName
+    if getattr(obj, 'fontFamily') is None:
+        setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
+    if getattr(obj, 'fontStyle') is None:
+        setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
+    if getattr(obj, 'fontWeight') is None:
+        setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
+    if getattr(obj, 'fontSize') is None:
+        setattr(obj, 'fontSize', styleSheet.body.fontSize)
+    # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
+    if getattr(obj, 'fill') is None:
+        setattr(obj, 'fill', styleSheet.body.stroke)
+
+    for obj in [styleSheet.fieldName, styleSheet.fieldIndex]:
         if getattr(obj, 'fontFamily') is None:
-            setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
+            setattr(obj, 'fontFamily', styleSheet.registerName.fontFamily)
         if getattr(obj, 'fontStyle') is None:
-            setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
+            setattr(obj, 'fontStyle', styleSheet.registerName.fontStyle)
         if getattr(obj, 'fontWeight') is None:
-            setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
+            setattr(obj, 'fontWeight', styleSheet.registerName.fontWeight)
         if getattr(obj, 'fontSize') is None:
-            setattr(obj, 'fontSize', styleSheet.body.fontSize)
-        # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
+            setattr(obj, 'fontSize', styleSheet.registerName.fontSize)
         if getattr(obj, 'fill') is None:
-            setattr(obj, 'fill', styleSheet.body.stroke)
+            setattr(obj, 'fill', styleSheet.registerName.fill)
 
 
 def extractEnum(declaration, enumClass):
