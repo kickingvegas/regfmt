@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 from regfmtlib.cssstyles import *
 from xml.dom.minidom import parseString
-
+from PIL import ImageFont
 from collections import UserList
+
+BASE_FONT_SIZE = 12
 
 def bboxWidth(bbox):
     return (bbox[2] - bbox[0])
@@ -48,6 +51,55 @@ def numToUnitString(num, unit: str=''):
     else:
         result = '{0}{1}'.format(num, unit)
     return result
+
+def cssFontToImageFont(fontFamily, fontSize):
+    baseFontname = fontFamily
+    baseFontSize = fontSize
+
+    # !!!: only pt is supported for geometry calculations
+
+    if 'pt' in baseFontSize:
+        baseFontSize = int(round(float(baseFontSize.replace('pt', ''))))
+    else:
+        try:
+            baseFontSize = int(float(round(baseFontSize)))
+        except:
+            message = ('WARNING: body font-size specification of "{}" is unsupported in '
+                       'CSS file for sizing the geometry of register fields. '
+                       'Coercing font size value to {}pt.\n')
+            sys.stderr.write(message.format(fontSize, BASE_FONT_SIZE))
+            baseFontSize = BASE_FONT_SIZE
+
+    result = ImageFont.truetype(baseFontname, baseFontSize)
+    return result
+
+def getTextFrame(text, font, anchor='ls', baseDPI=96.0):
+    """
+    use baseline by default
+
+    scalingFactor adjusts for the screen resolution which presumes 96 DPI.
+
+    :param text:
+    :param font:
+    :param anchor:
+    :return:
+    """
+    scalingFactor = baseDPI / 64.0
+    bbox64 = font.getbbox(text=text, anchor=anchor)
+    bbox = tuple(map(lambda x: x * scalingFactor, bbox64))
+    length = font.getlength(text=text)
+    frame = Frame(x=bbox[0],
+                  y=(bbox[1] * -1),
+                  width=bboxWidth(bbox),
+                  height=bboxHeight(bbox))
+    return frame
+
+def getBitFieldSize(font):
+    emFrame = getTextFrame(text='M', font=font)
+    emFrame.size.width *= 2
+    emFrame.size.height *= 4
+    return emFrame.size
+
 
 class Group(UserList):
     def writeDOM(self, children, doc):
@@ -152,7 +204,18 @@ class Line(Geometry):
         return lineElement
 
     def translate(self, dx: float=0.0, dy: float=0.0):
-        pass
+        T = translateTransform(dx, dy)
+        V = vector2D(self.x1, self.y1)
+        transformedV = matrixMult(T, V)
+        newX, newY = coordinateFromVector2D(transformedV)
+        self.x1 = newX
+        self.y1 = newY
+
+        V = vector2D(self.x2, self.y2)
+        transformedV = matrixMult(T, V)
+        newX, newY = coordinateFromVector2D(transformedV)
+        self.x2 = newX
+        self.y2 = newY
 
 
 class Rect(Shape):

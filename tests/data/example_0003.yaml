@@ -31,5 +31,43 @@ registers:
       - width: 1
         name: INTR_B (Interrupt B)
 
+  - name: Output Configuration 2
+    fields:
+      - width: 4
+        name: OBF_f
+
+      - width: 2
+        name: INTE_A
+
+      - width: 2
+        name: I/O
+
+  - name: Output Configuration 3
+    fields:
+      - width: 1
+        name: A1
+
+      - width: 1
+        name: A2
+
+      - width: 1
+        name: A3
+
+      - width: 1
+        name: A4
+
+      - width: 1
+        name: null
+
+      - width: 1
+        name: A6
+
+      - width: 1
+        name: A7
+        
+      - width: 1
+        name: A7
+
+
 layout:
   field-name-align: stair-left
