@@ -1,5 +1,7 @@
+SHELL := /opt/local/bin/bash
 EXEC=regfmt
 EXEC_SRC=${EXEC}.py
+PYTHON_EXEC=python3
 
 help:
 	./${EXEC_SRC} -h
@@ -9,6 +11,14 @@ test:
 
 clean:
 	find . -name '*.*~' -print -exec rm {} \;
+
+
+install: .venv
+	source .venv/bin/activate && pip install -r requirements.txt
+	cd .venv/bin && ln -s ../../regfmt.py regfmt
+
+.venv:
+	${PYTHON_EXEC} -m venv .venv
 
 install-pip-requirements:
 	pip install -r requirements.txt

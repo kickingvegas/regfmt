@@ -1,85 +1,74 @@
 * regfmt
-/regfmt/ is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however it is re-imagined using contemporary file formats.
+~regfmt~ is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however re-imagined using contemporary file formats.
 
-** Features
-- Modern configuration input file format (YAML)
+Example output of ~regfmt~:
+
+[[./tests/control/example0001.svg]]
+
+* Features
 - SVG output
-- CSS styling support
-
-
+- Modern configuration input file formats
+  - YAML for register configuration
+  - CSS for styling SVG output
 
 * Examples
+
+Generate the output file ~register.svg~ by invoking ~regfmt~ with the input file ~register.yaml~:
 
 #+begin_src shell
   $ regfmt -o register.svg register.yaml
 #+end_src
 
+The file content of ~register.yaml~:
 
-Given a file ~register.yaml~ with the following contents.
+#+begin_src yaml :tangle tests/data/register.yaml
+  ##
+  # Example YAML file for regfmt
 
-#+begin_src yaml
-##
-# Example YAML file for regfmt
+  width: 32
+  endian: bigBit
 
-width: 32
-endian: bigBit
+  registers:
+    - name: R1
+      fields:
+        - width: 8
+          name: A4
 
-registers:
-  - name: R1
-    fields:
-      - width: 8
-        name: A4
+        - width: 8
+          name: A3
 
-      - width: 8
-        name: A3
+        - width: 8
+          name: A2
 
-      - width: 8
-        name: A2
-
-      - width: 8
-        name: A1
-
-  - name: R2
-    fields:
-      - name: A1
-        width: 8
-
-      - name: A2
-        width: 8
-
-      - name: A3
-        width: 8
-
-      - name: A4
-        width: 8
-
-  - name: R3
-    fields:
-      - name: A1
-        width: 8
-
-      - name: A2
-        width: 8
-
-      - name: A3
-        width: 8
-
-      - name: A4
-        width: 8
-
-layout:
-  field-name-align: center
+        - width: 8
+          name: A1
+  layout:
+    field-name-align: center
 #+end_src
 
-[[./tests/control/example0001.svg]]
+The corresponding output SVG file. 
 
+# TODO: generate tests/control/register.svg
 
+* Installation
 
-* Install
+*regfmt* uses a Python virtual environment to support its execution. From the top-level project directory, run the Makefile target ~install~ to create the virtual environment ~.venv~ and install the /pip/ modules required by *regfmt*. It will also create the symlink ~.venv/bin/regfmt~ to ~regfmt.py~.
+
+#+begin_src sh
+  $ make install
+#+end_src
+
+To initialize the environment invoke the following command:
+#+begin_src sh
+  $ source .venv/bin/activate 
+#+end_src
+
 
 * YAML Specification
+TBD
 
 * CSS Specification
+TBD
 
 * License
 Copyright © 2022 Charles Y. Choi
