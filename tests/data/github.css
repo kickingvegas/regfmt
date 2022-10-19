@@ -20,9 +20,13 @@ register-name {
 }
 
 field-name {
-    fill: black;
+    fill: teal;
 }
 
 field-index {
     fill: darkslategrey;
+}
+
+field-name-line: {
+    stroke: purple;
 }

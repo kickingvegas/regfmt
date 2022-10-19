@@ -64,7 +64,7 @@ class RegisterFormat:
         # Render SVG
         svgWriter = SVGWriter(registerDB,
                               self.stdout,
-                              configFileName=self.parsedArguments.config)
+                              configFileName=self.parsedArguments.style)
         svgWriter.writeSVG()
 
         # wrap up

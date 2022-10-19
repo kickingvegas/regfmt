@@ -1,15 +1,36 @@
-* regfmt
-~regfmt~ is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however re-imagined using contemporary file formats.
+* regfmt 0.1.0
+This project is a *work in progress*.
 
-Example output of ~regfmt~:
+*regfmt* is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however re-imagined using contemporary file formats.
 
-[[./tests/control/example0001.svg]]
+Example output of *regfmt*:
+
+[[./tests/control/example_0001.svg]]
 
 * Features
 - SVG output
 - Modern configuration input file formats
   - YAML for register configuration
   - CSS for styling SVG output
+
+* Usage
+#+begin_src text
+  usage: regfmt [-h] [-v] [-o OUTPUT] [-s STYLE] [input]
+
+  regfmt - generate SVG diagrams of control register-style data formats
+
+  positional arguments:
+    input                 input register format YAML file (default: input.yaml)
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -v, --version         print version information and exit
+    -o OUTPUT, --output OUTPUT
+                          output file (default: '-' for stdout)
+    -s STYLE, --style STYLE
+                          CSS style file
+  
+#+end_src
 
 * Examples
 
@@ -32,9 +53,6 @@ The file content of ~register.yaml~:
     - name: R1
       fields:
         - width: 8
-          name: A4
-
-        - width: 8
           name: A3
 
         - width: 8
@@ -42,13 +60,82 @@ The file content of ~register.yaml~:
 
         - width: 8
           name: A1
+
+        - width: 8
+          name: A0
   layout:
     field-name-align: center
 #+end_src
 
-The corresponding output SVG file. 
+The corresponding output SVG file ~register.svg~ file would be rendered as follows:
 
-# TODO: generate tests/control/register.svg
+[[./tests/control/register.svg]]
+
+There are times when field names are physically too long to center align inside a field. Using the configuration setting ~layout.field-name-align: stair-left~ will layout the field names in staircase, left-aligned fashion as illustrated below.
+
+#+begin_src yaml :tangle tests/data/register-stair-left.yaml
+  ##
+  # Example YAML file for regfmt
+
+  width: 8
+  endian: bigBit
+
+  registers:
+    - name: R1
+      fields:
+        - width: 1
+          name: Coprocessor Usable
+
+        - width: 1
+          name: Boostrap Exception Vectors
+
+        - width: 2
+          name: Parity Errors
+
+        - width: 4
+          name: Interrupt
+  layout:
+    field-name-align: stair-left
+#+end_src
+
+[[./tests/control/register-stair-left.svg]]
+** CSS Styling
+The following example CSS file illustrates how to style the output SVG diagrams as shown in this document. They are invoked using the ~-s, --style~ command line options.
+
+#+begin_src css :tangle tests/data/github.css
+  /**
+   regfmt example CSS file
+
+   Copyright © 2022 Charles Y. Choi
+   */
+
+  body {
+      font-family: Futura, Helvetica, Arial, Verdana;
+      font-size: 12pt;
+      font-style: normal;
+      font-weight: normal;
+      fill: white;
+      stroke: black;
+      stroke-width: 1.0;
+      stroke-linecap: butt;
+  }
+
+  register-name {
+      fill: green;
+  }
+
+  field-name {
+      fill: teal;
+  }
+
+  field-index {
+      fill: darkslategrey;
+  }
+
+  field-name-line: {
+      stroke: purple;
+  }
+#+end_src
 
 * Installation
 
@@ -63,12 +150,132 @@ To initialize the environment invoke the following command:
   $ source .venv/bin/activate 
 #+end_src
 
+* regfmt YAML Specification
 
-* YAML Specification
-TBD
+** Top Level
+Top level schema for the *regfmt* input file.
 
-* CSS Specification
-TBD
+| Property  | Type                    | Required | Description                             |
+|-----------+-------------------------+----------+-----------------------------------------|
+| width     | integer                 | Y        | Global register bit width. Must be ≧ 1. |
+| registers | [[#Register][Register]][1..N]{ordered} | Y        | Array of ~Register~ instances.            |
+| endian    | [[#Endian][Endian]]                  | Y        | Endianness.                             |
+| layout    | [[#Layout][Layout]]                  |          | Layout directives.                      |
+
+** Endian
+This enumeration captures the supported [[https://en.wikipedia.org/wiki/Endianness][endianness]] types for a register. Selection of this value will determine how fields are to be indexed by *regfmt*. 
+
+| Value      | Description                                                              |
+|------------+--------------------------------------------------------------------------|
+| bigBit     | Bitwise endianness where the most significant bit is transmitted first.  |
+| littleBit  | Bitwise endianness where the least significant bit is transmitted first. |
+| bigByte    | Byte-wise big endian order.                                              |
+| littleByte | Byte-wise little endian order.                                           |
+
+** Register
+Schema describing register configuration.
+
+| Property | Type                 | Required | Description                                                                      |
+|----------+----------------------+----------+----------------------------------------------------------------------------------|
+| name     | string               |          | Register name. Can be ~null~.                                                      |
+| width    | integer              |          | Register bit width. If not specified will inherit from [[#Top-Level][Top Level]].                |
+| endian   | [[#Endian][Endian]]               |          | Endianness. If not specified will inherit from [[#Top-Level][Top Level]].                        |
+| fields   | [[#Field][Field]][1..N]{ordered} | Y        | Array of Field instances. Sum of field widths must equal the register bit width. |
+
+** Field
+Schema describing field configuration within a register.
+
+| Property | Type    | Required | Description                   |
+|----------+---------+----------+-------------------------------|
+| name     | string  |          | Field name. Can be null.      |
+| width    | integer | Y        | Field bit width. Must be ≧ 1. |
+
+** Layout
+Schema for layout configuration 
+
+| Property         | Type           | Required | Description                      |
+|------------------+----------------+----------+----------------------------------|
+| field-name-align | [[#FieldNameAlign][FieldNameAlign]] |          | Alignment directive for a field. |
+
+** FieldNameAlign
+This enumeration captures the supported alignment options for a field name.
+
+| Value      | Description                                                            |
+|------------+------------------------------------------------------------------------|
+| center     | Align field name in the center of the field.                           |
+| stair-left | Align field name below the field in staircase fashion, left-justified. |
+
+
+* regfmt CSS Specification
+
+** Selectors
+
+The following CSS selectors supported by *regfmt* are described below.
+
+*** body
+| Property       | Type          | Default Value | Description                                                                                                                                                                                          |
+|----------------+---------------+---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                |               |               | <20>                                                                                                                                                                                                 |
+| font-family    | <[[https://w3c.github.io/csswg-drafts/css-fonts/#family-name-value][family name]]> | Helvetica     | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-family][font-family]] attribute indicates which font family will be used to render the text, specified as a prioritized list of font family names and/or generic family names.                             |
+| font-size      | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length][length]]>      | 12pt          | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-size][font-size]] attribute refers to the size of the font from baseline to baseline when multiple lines of text are set solid in a multiline layout environment. Note only 'pt' is supported by *regfmt*. |
+| font-style     | [[#FontStyle][FontStyle]]     | normal        | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-size][font-style]] attribute specifies whether the text is to be rendered using a normal, italic, or oblique face.                                                                                       |
+| font-weight    | [[#FontWeight][FontWeight]]    | normal        | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-weight][font-weight]] attribute refers to the boldness or lightness of the glyphs used to render the text, relative to other fonts in the same font family.                                                |
+| fill           | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint][paint]]>       | black         | Presentation attribute that [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill][defines]] the color used to paint the element.                                                                                                                             |
+| stroke         | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint][paint]]>       | black         | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke][stroke]] attribute is a presentation attribute defining the color (or any SVG paint servers like gradients or patterns) used to paint the outline of the shape.                                    |
+| stroke-width   | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length][length]]>      | 1px           | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width][stroke-width]] attribute is a presentation attribute defining the width of the stroke to be applied to the shape.                                                                                  |
+| stroke-linecap | [[#StrokeLinecap][StrokeLinecap]] | butt          | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-linecap][stroke-linecap]] attribute is a presentation attribute defining the shape to be used at the end of open subpaths when they are stroked.                                                            |
+
+
+
+*** register, field
+| Property       | Type          | Default Value | Description                                                                                                                                                              |
+|----------------+---------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| fill           | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint][paint]]>       | black         | Presentation attribute that [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill][defines]] the color used to paint the element.                                                                                                                             |
+| stroke         | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint][paint]]>       | black         | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke][stroke]] attribute is a presentation attribute defining the color (or any SVG paint servers like gradients or patterns) used to paint the outline of the shape.                                    |
+| stroke-width   | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length][length]]>      | 1px           | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width][stroke-width]] attribute is a presentation attribute defining the width of the stroke to be applied to the shape.                                                                                  |
+| stroke-linecap | [[#StrokeLinecap][StrokeLinecap]] | butt          | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-linecap][stroke-linecap]] attribute is a presentation attribute defining the shape to be used at the end of open subpaths when they are stroked.                                                            |
+
+*** register-name, field-name, field-index
+| Property       | Type          | Default Value | Description                                                                                                                                                              |
+|----------------+---------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| font-family    | <[[https://w3c.github.io/csswg-drafts/css-fonts/#family-name-value][family name]]> | Helvetica     | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-family][font-family]] attribute indicates which font family will be used to render the text, specified as a prioritized list of font family names and/or generic family names.                             |
+| font-size      | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length][length]]>      | 12pt          | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-size][font-size]] attribute refers to the size of the font from baseline to baseline when multiple lines of text are set solid in a multiline layout environment. Note only 'pt' is supported by *regfmt*. |
+| font-style     | [[#FontStyle][FontStyle]]     | normal        | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-size][font-style]] attribute specifies whether the text is to be rendered using a normal, italic, or oblique face.                                                                                       |
+| font-weight    | [[#FontWeight][FontWeight]]    | normal        | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/font-weight][font-weight]] attribute refers to the boldness or lightness of the glyphs used to render the text, relative to other fonts in the same font family.                                                |
+| fill           | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint][paint]]>       | black         | Presentation attribute that [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill][defines]] the color used to paint the element.                                                                                                                             |
+
+*** field-name-line
+| Property       | Type          | Default Value | Description                                                                                                                                                              |
+|----------------+---------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| stroke         | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#paint][paint]]>       | black         | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke][stroke]] attribute is a presentation attribute defining the color (or any SVG paint servers like gradients or patterns) used to paint the outline of the shape.                                    |
+| stroke-width   | <[[https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#length][length]]>      | 1px           | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width][stroke-width]] attribute is a presentation attribute defining the width of the stroke to be applied to the shape.                                                                                  |
+| stroke-linecap | [[#StrokeLinecap][StrokeLinecap]] | butt          | The [[https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-linecap][stroke-linecap]] attribute is a presentation attribute defining the shape to be used at the end of open subpaths when they are stroked.                                                            |
+
+** Enumerations
+*** StrokeLinecap
+| Value  | Description                                                                                                                                                                                             |
+|--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        | <40>                                                                                                                                                                                                    |
+| butt   | The butt value indicates that the stroke for each subpath does not extend beyond its two endpoints.                                                                                                     |
+| square | The square value indicates that at the end of each subpath the stroke will be extended by a rectangle with a width equal to half the width of the stroke and a height equal to the width of the stroke. |
+| round  | The round value indicates that at the end of each subpath the stroke will be extended by a half circle with a diameter equal to the stroke width.                                                       |
+
+*** FontStyle
+
+| Value   |
+|---------+
+| normal  |
+| italic  |
+| oblique |
+
+*** FontWeight
+
+| Value   |
+|---------+
+| normal  |
+| bold    |
+| bolder  |
+| lighter |
 
 * License
 Copyright © 2022 Charles Y. Choi
