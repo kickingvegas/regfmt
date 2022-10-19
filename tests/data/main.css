@@ -9,60 +9,10 @@ body {
     font-size: 12pt;
     font-style: normal;
     font-weight: normal;
-    fill: white;
-    stroke: green;
-    stroke-width: 0.5;
-    stroke-linecap: butt;
-}
-
-
-register {
-    fill: chiffon;
-    stroke: magenta;
-    stroke-width: 0.1;
-    stroke-linecap: butt;
-}
-
-field {
-    fill: cyan;
+    fill: none;
     stroke: black;
-    stroke-width: 0.3;
+    stroke-width: 1.0;
     stroke-linecap: butt;
 }
 
-field-name-line {
-    stroke: orange;
-    stroke-width: 1;
-    stroke-linecap: butt;
-}
 
-register-name {
-    font-family: Chalkduster, serif;
-    font-size: 12pt;
-    font-style: italic;
-    fill: black;
-}
-
-field-name {
-    font-family: Helvetica;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 12pt;
-    fill: blue;
-}
-
-field-index {
-    font-size: 9pt;
-    font-family: Times;
-    font-style: italic;
-    font-weight: normal;
-    fill: blue;
-}
-
-
-field-index {
-    font-size: 10pt;
-    font-style: italic;
-    font-weight: normal;
-    fill: blue;
-}

@@ -36,5 +36,5 @@ registers:
         
 
 layout:
-  field-name-align: stair-right
+  field-name-align: center
   register-layout: tb

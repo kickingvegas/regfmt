@@ -14,7 +14,8 @@
 # limitations under the License.
 
 from enum import Enum
-
+from PIL import ImageFont
+import sys
 
 class StrokeLinecap(Enum):
     butt = 'butt'
@@ -47,12 +48,41 @@ class TextStyle:
         self.fontStyle = fontStyle
         self.fontWeight = fontWeight
         self.fill = fill
+        self.font = None
 
+    def truetype(self):
+        if self.font:
+            return self.font
+
+        baseFontSize = self.fontSize
+
+        if 'pt' in baseFontSize:
+            baseFontSize = int(round(float(baseFontSize.replace('pt', ''))))
+
+        else:
+            try:
+                baseFontSize = int(float(round(baseFontSize)))
+            except:
+                message = ('WARNING: body font-size specification of "{}" is unsupported in '
+                           'CSS file for sizing the geometry of register fields. '
+                           'Coercing font size value to {}pt.\n')
+                sys.stderr.write(message.format(fontSize, 12))
+                baseFontSize = 12
+
+        for fontName in self.fontFamily:
+            try:
+                font = ImageFont.truetype(fontName, baseFontSize)
+                break
+            except:
+                font = ImageFont.truetype('Helvetica', baseFontSize)
+                break
+
+        return font
 
 class LineStyle:
     def __init__(self,
                  stroke: str = 'grey',
-                 strokeWidth: str = '0.5',
+                 strokeWidth: str = '0.8',
                  strokeLinecap: StrokeLinecap = StrokeLinecap.butt
                  ):
         self.stroke: str = stroke
