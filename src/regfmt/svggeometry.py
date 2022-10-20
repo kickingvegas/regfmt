@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import sys
-from regfmtlib.cssstyles import *
+from regfmt.cssstyles import *
 from xml.dom.minidom import parseString
 from PIL import ImageFont
 from collections import UserList

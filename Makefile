@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ##
 # Copyright 2022 Charles Y. Choi
 #
@@ -29,20 +28,21 @@ clean:
 	find . -name '*.*~' -print -exec rm {} \;
 
 install: .venv
-	source .venv/bin/activate && pip install -r requirements.txt
-	cd .venv/bin && ln -s ../../regfmt.py regfmt
+	source .venv/bin/activate && pip install -r src/regfmt/requirements.txt
+	cd .venv/bin && ln -s ../../src/regfmt/regfmt.py regfmt
 
 .venv:
 	${PYTHON_EXEC} -m venv .venv
 
 install-pip-requirements:
-	pip install -r requirements.txt
+	pip install -r src/regfmt/requirements.txt
 
 freeze-pip-requirements:
-	pip freeze > requirements.txt
+	pip freeze > src/regfmt/requirements.txt
 
-deep-clean: clean
-	find . -name '__pycache__' -not -path "./.venv/*" -print | xargs rm -rf 
+deepclean: clean
+	find . -name '__pycache__' -not -path "./.venv/*" -print | xargs rm -rf
+	rm -rf dist
 
 clean-tests:
 	make -C tests clean
@@ -52,4 +52,11 @@ readme-examples:
 	regfmt -s tests/data/github.css -o tests/control/register.svg tests/data/register.yaml
 	regfmt -s tests/data/github.css -o tests/control/register-stair-left.svg tests/data/register-stair-left.yaml
 
-.PHONY: help test clean deep-clean clean-tests install-pip-requirements freeze-pip-requirements readme-examples
+
+package:
+	${PYTHON_EXEC} -m build
+
+upload:
+	twine upload --repository pypi dist/*
+
+.PHONY: help test clean deepclean clean-tests install-pip-requirements freeze-pip-requirements readme-examples package upload

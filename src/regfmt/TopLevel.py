@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from regfmtlib import Constants
-from regfmtlib import Register
-from regfmtlib import Endian
+from regfmt import Constants
+from regfmt import Register
+from regfmt import Endian
 from enum import Enum
 
 DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
