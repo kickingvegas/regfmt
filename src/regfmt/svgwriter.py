@@ -14,12 +14,12 @@
 # limitations under the License.
 
 from xml.dom.minidom import getDOMImplementation
-from regfmtlib import TopLevel, FieldNameAlign
-from regfmtlib import Register
-from regfmtlib.svggeometry import *
-from regfmtlib.cssparser import parseCSS, cascadeStyles
-from regfmtlib.centeralignlayout import writeFieldNameCenterSVG
-from regfmtlib.stairleftlayout import writeStairLeftSVG
+from regfmt import TopLevel, FieldNameAlign
+from regfmt import Register
+from regfmt.svggeometry import *
+from regfmt.cssparser import parseCSS, cascadeStyles
+from regfmt.centeralignlayout import writeFieldNameCenterSVG
+from regfmt.stairleftlayout import writeStairLeftSVG
 
 class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile, configFileName=None):

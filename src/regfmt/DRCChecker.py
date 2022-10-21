@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from regfmtlib import Register
-from regfmtlib import Field
-from regfmtlib import TopLevel
-from regfmtlib import Endian
+from regfmt import Register
+from regfmt import Field
+from regfmt import TopLevel
+from regfmt import Endian
 from operator import add
 from functools import reduce
 import sys

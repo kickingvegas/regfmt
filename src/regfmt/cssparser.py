@@ -18,7 +18,7 @@ import sys
 import errno
 
 import tinycss2
-from regfmtlib.cssstyles import *
+from regfmt.cssstyles import *
 
 classNameMap = {
                 'register-name': 'registerName',
