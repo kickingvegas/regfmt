@@ -40,7 +40,7 @@ class SVGWriter:
 
 
         cascadeStyles(self.styleSheet)
-        self.font = cssFontToImageFont(fontFamily=self.styleSheet.body.fontFamily[0],
+        self.font = cssFontToImageFont(fontFamily=self.styleSheet.body.fontFamily,
                                        fontSize=self.styleSheet.body.fontSize)
 
     def createDocument(self, origin=None, size=None):

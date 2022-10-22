@@ -18,6 +18,7 @@ from regfmt.cssstyles import *
 from xml.dom.minidom import parseString
 from PIL import ImageFont
 from collections import UserList
+from regfmt import BASE_FONT_NAME
 
 BASE_FONT_SIZE = 12
 
@@ -53,24 +54,33 @@ def numToUnitString(num, unit: str=''):
     return result
 
 def cssFontToImageFont(fontFamily, fontSize):
-    baseFontname = fontFamily
-    baseFontSize = fontSize
+    result = None
+    for baseFontname in fontFamily:
+        baseFontSize = fontSize
 
-    # !!!: only pt is supported for geometry calculations
+        # !!!: only pt is supported for geometry calculations
 
-    if 'pt' in baseFontSize:
-        baseFontSize = int(round(float(baseFontSize.replace('pt', ''))))
-    else:
+        if 'pt' in baseFontSize:
+            baseFontSize = int(round(float(baseFontSize.replace('pt', ''))))
+        else:
+            try:
+                baseFontSize = int(float(round(baseFontSize)))
+            except:
+                message = ('WARNING: body font-size specification of "{}" is unsupported in '
+                           'CSS file for sizing the geometry of register fields. '
+                           'Coercing font size value to {}pt.\n')
+                sys.stderr.write(message.format(fontSize, BASE_FONT_SIZE))
+                baseFontSize = BASE_FONT_SIZE
+
         try:
-            baseFontSize = int(float(round(baseFontSize)))
-        except:
-            message = ('WARNING: body font-size specification of "{}" is unsupported in '
-                       'CSS file for sizing the geometry of register fields. '
-                       'Coercing font size value to {}pt.\n')
-            sys.stderr.write(message.format(fontSize, BASE_FONT_SIZE))
-            baseFontSize = BASE_FONT_SIZE
+            result = ImageFont.truetype(baseFontname, baseFontSize)
+            break
+        except OSError:
+            continue
 
-    result = ImageFont.truetype(baseFontname, baseFontSize)
+    if result is None:
+        result = ImageFont.truetype(BASE_FONT_NAME, baseFontSize)
+
     return result
 
 def getTextFrame(text, font, anchor='ls', baseDPI=96.0):

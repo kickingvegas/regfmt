@@ -12,9 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from os import uname
+
+VERSION = '0.1.9'
+BASE_FONT_NAME = 'Helvetica'
+
+unameObj = uname()
+if unameObj.sysname == 'Linux':
+    BASE_FONT_NAME = 'FreeSans'
+elif unameObj.sysname == 'Windows':
+    BASE_FONT_NAME = 'Arial'
 
 from .InputLoadAndValidate import InputLoadAndValidate
-from .CommandLineParser import CommandLineParser
 from .Constants import Constants
 from .Endian import Endian
 from .Field import Field
@@ -26,6 +35,10 @@ from .svggeometry import *
 from .svgwriter import SVGWriter
 from .centeralignlayout import *
 from .stairleftlayout import *
+from .CommandLineParser import CommandLineParser
+from .RegisterFormat import RegisterFormat
 
 
-
+def main():
+    app = RegisterFormat(CommandLineParser().run())
+    app.run()

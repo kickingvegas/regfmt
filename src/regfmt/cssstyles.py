@@ -16,6 +16,7 @@
 from enum import Enum
 from PIL import ImageFont
 import sys
+from regfmt import BASE_FONT_NAME
 
 class StrokeLinecap(Enum):
     butt = 'butt'
@@ -72,9 +73,10 @@ class TextStyle:
         for fontName in self.fontFamily:
             try:
                 font = ImageFont.truetype(fontName, baseFontSize)
-                break
-            except:
-                font = ImageFont.truetype('Helvetica', baseFontSize)
+                continue
+            except OSError:
+                
+                font = ImageFont.truetype(BASE_FONT_NAME, baseFontSize)
                 break
 
         return font
