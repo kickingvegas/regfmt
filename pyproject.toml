@@ -33,7 +33,7 @@ dependencies = [
 "Issue Tracker" = "https://github.com/kickingvegas/regfmt/issues"
 
 [project.scripts]
-regfmt = "regfmt.regfmt:main"
+regfmt = "regfmt:main"
 
 
 #[tool.setuptools.packages.find]

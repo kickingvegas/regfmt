@@ -16,17 +16,12 @@
 
 import os
 import sys
+from regfmt import VERSION
 from regfmt import CommandLineParser
 from regfmt import InputLoadAndValidate
 from regfmt import TopLevel
 from regfmt import DRCChecker
 from regfmt import SVGWriter
-
-VERSION = '0.1.9'
-
-def main():
-    app = RegisterFormat(CommandLineParser().run())
-    app.run()
 
 
 class RegisterFormat:

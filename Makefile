@@ -13,13 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-SHELL := /bin/bash
 EXEC=regfmt
 EXEC_SRC=${EXEC}.py
 PYTHON_EXEC=python3
 
 help:
-	./${EXEC_SRC} -h
+	./scripts/${EXEC} -h
 
 test:
 	python -m unittest discover
@@ -28,8 +27,7 @@ clean:
 	find . -name '*.*~' -print -exec rm {} \;
 
 install: .venv
-	source .venv/bin/activate && pip install -r src/regfmt/requirements.txt
-	cd .venv/bin && ln -s ../../src/regfmt/regfmt.py regfmt
+	./scripts/install.sh
 
 .venv:
 	${PYTHON_EXEC} -m venv .venv
