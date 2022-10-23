@@ -14,7 +14,7 @@
 # limitations under the License.
 from os import uname
 
-VERSION = '0.1.9'
+VERSION = '0.1.10'
 BASE_FONT_NAME = 'Helvetica'
 
 unameObj = uname()
