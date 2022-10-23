@@ -88,6 +88,10 @@ def writeStairLeftSVG(registerDB, topGroup, styleSheet, font, registerSpacing=5)
                 fieldNameX = (fieldWidth / 2.0) + displacementX + 3.0
                 fieldNameY = fieldHeight + fieldNameFrame.origin.y + fieldDisplacementY + 10.0
 
+                newParentWidth = fieldNameX + fieldNameFrame.size.width
+                if parentSize.width < newParentWidth:
+                    parentSize.width = newParentWidth
+
                 registerGroup.append(Text(text=field.name,
                                           x=fieldNameX,
                                           y=fieldNameY,
