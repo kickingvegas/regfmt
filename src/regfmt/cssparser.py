@@ -14,9 +14,7 @@
 # limitations under the License.
 
 import os
-import sys
 import errno
-
 import tinycss2
 from regfmt.cssstyles import *
 
