@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "regfmt"
-version = "0.1.9a3"
+version = "0.1.10a1"
 authors = [
   { name="Charles Choi", email="kickingvegas@gmail.com"}
 ]
@@ -34,10 +34,3 @@ dependencies = [
 
 [project.scripts]
 regfmt = "regfmt:main"
-
-
-#[tool.setuptools.packages.find]
-#where = ["src"]
-
-#[tool.setuptools]
-#script-files = ["src/regfmt/regfmt"]
