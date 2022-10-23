@@ -2,7 +2,7 @@
 
 This project is a **work in progress**.
 
-**regfmt** is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the *dformat* command from the *troff* family of tools, however re-imagined using contemporary file formats.
+**regfmt** is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the *dformat* command from the *troff* family of tools, however re-imagined using contemporary (circa 2022) file formats.
 
 # Features
 

@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "regfmt"
-version = "0.1.9"
+version = "0.1.9a3"
 authors = [
   { name="Charles Choi", email="kickingvegas@gmail.com"}
 ]
 
 description = "A command line utility to generate SVG diagrams for control register-style data formats."
-readme = "README-pypi.md"
+readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
