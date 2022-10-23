@@ -20,6 +20,7 @@ from regfmt.svggeometry import *
 from regfmt.cssparser import parseCSS, cascadeStyles
 from regfmt.centeralignlayout import writeFieldNameCenterSVG
 from regfmt.stairleftlayout import writeStairLeftSVG
+from tinycss2.ast import Declaration
 
 class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile, configFileName=None):
@@ -34,7 +35,13 @@ class SVGWriter:
             sys.exit(err.errno)
 
         except ValueError as err:
-            message = 'ERROR: {} Exiting…\n'.format(err.args[0])
+            message = 'ERROR: {} Exiting…\n'.format(err.args[1])
+            if isinstance(err.args[0], Declaration):
+                declaration: Declaration = err.args[0]
+                message = 'ERROR: {} ({}, {}): {}'.format(configFileName,
+                                                          declaration.source_line,
+                                                          declaration.source_column,
+                                                          err.args[1])
             sys.stderr.write(message)
             sys.exit(1)
 
