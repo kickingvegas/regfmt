@@ -5,7 +5,7 @@ This project is a *work in progress*.
 
 Example output of *regfmt*:
 
-[[./tests/control/example_0001.svg]]
+[[../tests/control/example_0001.svg]]
 
 * Features
 - SVG output
@@ -69,7 +69,7 @@ The file content of ~register.yaml~:
 
 The corresponding output SVG file ~register.svg~ file would be rendered as follows:
 
-[[./tests/control/register.svg]]
+[[../tests/control/register.svg]]
 
 There are times when field names are physically too long to center align inside a field. Using the configuration setting ~layout.field-name-align: stair-left~ will layout the field names in staircase, left-aligned fashion as illustrated below.
 
@@ -98,7 +98,7 @@ There are times when field names are physically too long to center align inside 
     field-name-align: stair-left
 #+end_src
 
-[[./tests/control/register-stair-left.svg]]
+[[../tests/control/register-stair-left.svg]]
 ** CSS Styling
 The following example CSS file illustrates how to style the output SVG diagrams as shown in this document. They are invoked using the ~-s, --style~ command line options.
 
