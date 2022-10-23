@@ -15,7 +15,7 @@
 
 import unittest
 
-from regfmtlib import CommandLineParser
+from regfmt import CommandLineParser
 from regfmt import RegisterFormat
 
 class TestCommandLineParser(unittest.TestCase):
