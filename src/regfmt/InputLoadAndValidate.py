@@ -13,12 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from jsonschema import validate, exceptions
-from yaml import Loader, Dumper, load, safe_load
-from yaml.scanner import ScannerError
-import sys
+from jsonschema import validate
+from yaml import Loader, load, safe_load
 
-INPUT_SCHEMA_YAML="""
+INPUT_SCHEMA_YAML = """
 type: object
 properties: 
   width:
@@ -96,7 +94,7 @@ class InputLoadAndValidate:
     def loadAndValidate(self):
         inputYAML = self.loadInput(self.parsedArguments)
         schemaYAML = self.loadInputSchema(INPUT_SCHEMA_YAML)
-        result = validate(inputYAML, schemaYAML)
+        validate(inputYAML, schemaYAML)
         return inputYAML
         
     def loadInput(self, parsedArguments):

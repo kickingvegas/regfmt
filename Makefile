@@ -70,6 +70,9 @@ readme-examples:
 	regfmt -s tests/data/github.css -o tests/control/register.svg tests/data/register.yaml
 	regfmt -s tests/data/github.css -o tests/control/register-stair-left.svg tests/data/register-stair-left.yaml
 
+lint:
+	flake8 src/regfmt/*.py
+
 package:
 	${PYTHON_EXEC} -m build
 
@@ -88,5 +91,6 @@ package \
 upload \
 coverage \
 coverage-html \
-view-coverage-html
+view-coverage-html \
+lint
 

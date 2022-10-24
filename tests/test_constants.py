@@ -16,9 +16,11 @@
 import unittest
 from regfmt import Constants
 
+
 class TestConstants(unittest.TestCase):
     def test_default_width(self):
         self.assertEqual(Constants.DEFAULT_WIDTH, 32)
+
 
 if __name__ == '__main__':
     unittest.main()

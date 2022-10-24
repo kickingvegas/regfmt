@@ -19,8 +19,9 @@ from regfmt import Field
 
 DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
 
+
 class Register:
-    def __init__(self, parent, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigBit):
+    def __init__(self, parent, config=None, width: int = DEFAULT_WIDTH, endian: Endian = Endian.bigBit):
         self.name: str = None
         self.width: int = width
         self.endian: Endian = endian

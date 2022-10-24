@@ -15,12 +15,11 @@
 
 from xml.dom.minidom import getDOMImplementation
 from regfmt import TopLevel, FieldNameAlign, VERSION
-from regfmt import Register
 from regfmt.svggeometry import *
 from regfmt.cssparser import parseCSS, cascadeStyles
 from regfmt.centeralignlayout import writeFieldNameCenterSVG
 from regfmt.stairleftlayout import writeStairLeftSVG
-from tinycss2.ast import Declaration
+
 
 class SVGWriter:
     def __init__(self, registerDB: TopLevel, outfile, configFileName=None):
@@ -51,7 +50,6 @@ class SVGWriter:
 
         return doc, topElement
 
-
     def compositeSVG(self, doc, topElement, topGroup, outfile):
         children = []
         topGroup.writeDOM(children, doc)
@@ -78,7 +76,7 @@ class SVGWriter:
                                              topGroup=topGroup,
                                              styleSheet=self.styleSheet,
                                              font=self.font)
-            #origin, size = self.writeFieldNameStairLeftSVG(registerDB, topGroup)
+            # origin, size = self.writeFieldNameStairLeftSVG(registerDB, topGroup)
 
         doc, topElement = self.createDocument(origin=origin, size=size)
 

@@ -31,12 +31,12 @@ class TestRegister(unittest.TestCase):
         self.assertEqual(register.parent, topLevel)
 
     def test_init_config(self):
-        config = { 'name': randomAsciiString(k=10),
-                   'width' : random.randint(0, 512),
-                   'endian' : Endian.littleBit }
+        config = {'name': randomAsciiString(k=10),
+                  'width': random.randint(0, 512),
+                  'endian': Endian.littleBit}
 
-        fields = [ {'name': randomAsciiString(k=random.randint(1, 8)),
-                    'width': random.randint(1, 512)}]
+        fields = [{'name': randomAsciiString(k=random.randint(1, 8)),
+                   'width': random.randint(1, 512)}]
         config['fields'] = fields
 
         register = Register(parent=TopLevel(), config=config)

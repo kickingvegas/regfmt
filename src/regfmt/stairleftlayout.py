@@ -1,6 +1,7 @@
 from regfmt.svggeometry import *
 from regfmt import Register
 
+
 def writeStairLeftSVG(registerDB, topGroup, styleSheet, font, registerSpacing=5):
     bitFieldSize = getBitFieldSize(font=font)
 
@@ -100,7 +101,7 @@ def writeStairLeftSVG(registerDB, topGroup, styleSheet, font, registerSpacing=5)
 
                 registerGroup.append(Line(x1=displacementX + (fieldWidth / 2.0),
                                           y1=registerHeight,
-                                          x2=displacementX + (fieldWidth / 2.0 ),
+                                          x2=displacementX + (fieldWidth / 2.0),
                                           y2=fieldNameY,
                                           style=styleSheet.fieldNameLine))
 

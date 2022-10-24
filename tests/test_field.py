@@ -25,8 +25,8 @@ class TestField(unittest.TestCase):
         auditAttributeExistence(self, field, attributes)
 
     def test_init_config(self):
-        config = { 'name': randomAsciiString(k=10),
-                   'width' : random.randint(0, 512)}
+        config = {'name': randomAsciiString(k=10),
+                  'width': random.randint(0, 512)}
         field = Field(config=config)
 
         self.assertEqual(field.name, config['name'])
