@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import os
 import unittest
 from regfmt import CommandLineParser
 from regfmt import RegisterFormat
@@ -20,6 +20,18 @@ from io import StringIO
 from regfmt import VERSION
 import difflib
 import errno
+from tests.testutils import randomAsciiString
+
+
+def fileCompareContents(test_filename: str, control_filename: str):
+    with open(test_filename) as infile:
+        testLines = infile.readlines()
+
+    with open(control_filename) as infile:
+        controlLines = infile.readlines()
+
+    diff = list(difflib.unified_diff(testLines, controlLines, fromfile=test_filename, tofile=control_filename))
+    return diff
 
 
 class TestRegisterFormat(unittest.TestCase):
@@ -27,7 +39,7 @@ class TestRegisterFormat(unittest.TestCase):
         examples = ['example_0001', 'example_0002', 'example_0003']
 
         for example in examples:
-            clp = CommandLineParser()
+            clp = CommandLineParser(exit_on_error=False)
             outfileName = 'tests/output/{}.svg'.format(example)
             infileName = 'tests/data/{}.yaml'.format(example)
             controlName = 'tests/control/{}.svg'.format(example)
@@ -35,21 +47,12 @@ class TestRegisterFormat(unittest.TestCase):
             result = RegisterFormat(parsedArgs).run()
             self.assertEqual(0, result)
 
-            with open(outfileName) as infile:
-                testLines = infile.readlines()
-
-            with open(controlName) as infile:
-                controlLines = infile.readlines()
-
-            diff = list(difflib.unified_diff(testLines, controlLines, fromfile=outfileName, tofile=controlName))
-            self.assertEqual(0, len(diff))
+            diff = fileCompareContents(outfileName, controlName)
+            self.assertEqual(0, len(diff), 'FAILURE: {}.yaml'.format(example))
 
     def test_version(self):
-        clp = CommandLineParser()
+        clp = CommandLineParser(exit_on_error=False)
         parsedArgs = clp.parser.parse_args(['--version'])
-        # !!!: for some reason version isn't set by argparse
-        parsedArgs.version = True
-
         registerFormat = RegisterFormat(parsedArgs)
         registerFormat.stdout = StringIO()
         result = registerFormat.run()
@@ -59,8 +62,8 @@ class TestRegisterFormat(unittest.TestCase):
         self.assertEqual(testValue.strip(), VERSION)
 
     def test_missingFile(self):
-        controlFileName = 'dummyfile.yaml'
-        clp = CommandLineParser()
+        controlFileName = '{}.yaml'.format(randomAsciiString(k=20))
+        clp = CommandLineParser(exit_on_error=False)
         parsedArgs = clp.parser.parse_args([controlFileName])
 
         registerFormat = RegisterFormat(parsedArgs)
@@ -72,8 +75,8 @@ class TestRegisterFormat(unittest.TestCase):
         self.assertEqual(testValue, message.format(controlFileName))
 
     def test_missing_css(self):
-        clp = CommandLineParser()
-        controlFileName = "foo.css"
+        clp = CommandLineParser(exit_on_error=False)
+        controlFileName = "{}.css".format(randomAsciiString(k=20))
         message = 'ERROR: No such file or directory: "{}"  Exiting…\n'
 
         parsedArgs = clp.parser.parse_args(['-s', controlFileName, 'tests/data/example_0001.yaml'])
@@ -85,7 +88,7 @@ class TestRegisterFormat(unittest.TestCase):
         self.assertEqual(testValue, message.format(controlFileName))
 
     def test_css_main(self):
-        clp = CommandLineParser()
+        clp = CommandLineParser(exit_on_error=False)
         controlFileName = "clean.css"
         message = 'ERROR: No such file or directory: "{}"  Exiting…\n'
 
@@ -101,6 +104,63 @@ class TestRegisterFormat(unittest.TestCase):
         # testValue = registerFormat.stderr.getvalue()
         # self.assertEqual(result, errno.ENOENT)
         # self.assertEqual(testValue, message.format(controlFileName))
+
+    def test_template_yaml(self):
+        outputFilename = 'template.yaml'
+        if os.path.exists(outputFilename):
+            os.remove(outputFilename)
+
+        clp = CommandLineParser(exit_on_error=False)
+        args = ['-t', 'yaml']
+        parsedArgs = clp.parser.parse_args(args)
+        registerFormat = RegisterFormat(parsedArgs)
+        result = registerFormat.run()
+        self.assertEqual(result, 0)
+        self.assertTrue(os.path.exists(outputFilename))
+
+        controlFilename = 'tests/control/{}'.format(outputFilename)
+        diff = fileCompareContents(test_filename=outputFilename, control_filename=controlFilename)
+        self.assertEqual(0, len(diff), 'FAILURE: {} differs from {}'.format(outputFilename, controlFilename))
+        os.remove(outputFilename)
+
+    def test_template_css(self):
+        outputFilename = 'template.css'
+        if os.path.exists(outputFilename):
+            os.remove(outputFilename)
+
+        clp = CommandLineParser(exit_on_error=False)
+        args = ['-t', 'css']
+        parsedArgs = clp.parser.parse_args(args)
+        registerFormat = RegisterFormat(parsedArgs)
+        result = registerFormat.run()
+        self.assertEqual(result, 0)
+        self.assertTrue(os.path.exists(outputFilename))
+
+        controlFilename = 'tests/control/{}'.format(outputFilename)
+        diff = fileCompareContents(test_filename=outputFilename, control_filename=controlFilename)
+        self.assertEqual(0, len(diff), 'FAILURE: {} differs from {}'.format(outputFilename, controlFilename))
+        os.remove(outputFilename)
+
+    def test_template_yamlcss(self):
+        filenames = ['template.yaml', 'template.css']
+
+        for filename in filenames:
+            if os.path.exists(filename):
+                os.remove(filename)
+
+        clp = CommandLineParser(exit_on_error=False)
+        args = ['-t', 'yamlcss']
+        parsedArgs = clp.parser.parse_args(args)
+        registerFormat = RegisterFormat(parsedArgs)
+        result = registerFormat.run()
+        self.assertEqual(result, 0)
+
+        for filename in filenames:
+            self.assertTrue(os.path.exists(filename))
+            controlFilename = 'tests/control/{}'.format(filename)
+            diff = fileCompareContents(test_filename=filename, control_filename=controlFilename)
+            self.assertEqual(0, len(diff), 'FAILURE: {} differs from {}'.format(filename, controlFilename))
+            os.remove(filename)
 
 
 if __name__ == '__main__':

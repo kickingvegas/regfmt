@@ -25,6 +25,7 @@ from regfmt import SVGWriter
 from jsonschema.exceptions import ValidationError
 from yaml.scanner import ScannerError
 from tinycss2.ast import Declaration, ParseError
+from regfmt import write_yaml_css_templates
 
 
 class RegisterFormat:
@@ -41,6 +42,9 @@ class RegisterFormat:
         if parsedArguments.version:
             self.stdout.write('{0}\n'.format(self.version))
             return 0
+
+        if parsedArguments.template:
+            return write_yaml_css_templates(template_type=parsedArguments.template)
 
         if parsedArguments.output != '-':
             outfile = open('{0}'.format(parsedArguments.output), 'w')
@@ -82,6 +86,7 @@ class RegisterFormat:
 
         except:
             print('wtf')
+            raise
 
         # Deserialize input YAML into native object DB
         registerDB = TopLevel(config=inputYAML)
@@ -100,6 +105,7 @@ class RegisterFormat:
             message = 'ERROR: {}: "{}"  Exiting…\n'.format(err.strerror, err.filename)
             self.stderr.write(message)
             return err.errno
+
         except ValueError as err:
             if len(err.args) and isinstance(err.args[0], Declaration):
                 errorDeclaration: Declaration = err.args[0]
