@@ -21,6 +21,7 @@ from regfmt import VERSION
 import difflib
 import errno
 
+
 class TestRegisterFormat(unittest.TestCase):
     def test_example_files(self):
         examples = ['example_0001', 'example_0002', 'example_0003']
@@ -69,6 +70,7 @@ class TestRegisterFormat(unittest.TestCase):
         self.assertEqual(errno.ENOENT, result)
         message = 'ERROR: file "{0}" not found.\n'
         self.assertEqual(testValue, message.format(controlFileName))
+
     def test_missing_css(self):
         clp = CommandLineParser()
         controlFileName = "foo.css"
@@ -93,13 +95,12 @@ class TestRegisterFormat(unittest.TestCase):
                                             'tests/output/example_0001-clean.svg',
                                             'tests/data/example_0001.yaml'])
         registerFormat = RegisterFormat(parsedArgs)
-        #registerFormat.stderr = StringIO()
+        # registerFormat.stderr = StringIO()
         result = registerFormat.run()
         self.assertEqual(result, 0)
-        #testValue = registerFormat.stderr.getvalue()
-        #self.assertEqual(result, errno.ENOENT)
-        #self.assertEqual(testValue, message.format(controlFileName))
-
+        # testValue = registerFormat.stderr.getvalue()
+        # self.assertEqual(result, errno.ENOENT)
+        # self.assertEqual(testValue, message.format(controlFileName))
 
 
 if __name__ == '__main__':

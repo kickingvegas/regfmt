@@ -17,11 +17,13 @@ import unittest
 import random
 import string
 
+
 def auditAttributeExistence(testbench: unittest.TestCase, obj, attributes):
     for attribute in attributes:
         testbench.assertTrue(hasattr(obj, attribute), '{} missing attribute: {}'.format(obj, attribute))
 
-def randomAsciiString(k: int=5):
+
+def randomAsciiString(k: int = 5):
     data = string.ascii_letters + string.digits
     result = ''.join(random.choices(data, k=k))
     return result

@@ -39,7 +39,7 @@ class Layout:
 
 
 class TopLevel:
-    def __init__(self, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigByte):
+    def __init__(self, config=None, width: int = DEFAULT_WIDTH, endian: Endian = Endian.bigByte):
         self.width: int = width
         self.endian: Endian = endian
         self.registers: [Register] = []

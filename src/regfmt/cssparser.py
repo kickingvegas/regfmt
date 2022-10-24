@@ -25,6 +25,7 @@ classNameMap = {
                 'field-name-line': 'fieldNameLine'
                 }
 
+
 def parseCSS(configFileName: str, styleSheet: StyleSheet):
     if configFileName is None:
         return
@@ -49,7 +50,6 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
         filterDeclarationErrors(configFileName, declarations)
 
         className = rule.prelude[0].value
-        #print(className)
 
         if className not in ('body', 'register', 'field', 'register-name',
                              'field-name', 'field-index', 'field-name-line'):
@@ -61,7 +61,6 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                                'fill',
                                'stroke', 'stroke-width', 'stroke-linecap')
 
-
             for declaration in declarations:
                 if declaration.name not in legalAttributes:
                     continue
@@ -71,8 +70,6 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
 
                 elif declaration.name == 'font-size':
                     styleSheet.body.fontSize = extractDimensionalValue(declaration)
-                    #styleSheet.registerName.fontSize = styleSheet.body.fontSize
-                    #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
                     # TODO: deal with fieldIndex
 
                 elif declaration.name == 'font-style':
@@ -118,7 +115,6 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                 elif declaration.name == 'stroke-linecap':
                     getattr(styleSheet, classNameMap[className]).strokeLinecap = extractEnum(declaration, StrokeLinecap)
 
-
         elif className in ('register-name', 'field-name', 'field-index'):
             for declaration in declarations:
                 if declaration.name == 'font-family':
@@ -138,7 +134,7 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
 
 
 def cascadeStyles(styleSheet):
-    ## Cascade styles in StyleSheet
+    # Cascade styles in StyleSheet
     # body > register, field if property.value is None
     # body > register-name, field-name, field-index if property.value is None
     # cascade rect style
@@ -180,7 +176,8 @@ def cascadeStyles(styleSheet):
         setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
     if getattr(obj, 'fontSize') is None:
         setattr(obj, 'fontSize', styleSheet.body.fontSize)
-    # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
+    # !!!: Because fill attribute used for both text and rect with
+    # different semantics, using rect.stroke value for text.fill
     if getattr(obj, 'fill') is None:
         setattr(obj, 'fill', styleSheet.body.stroke)
 
@@ -216,6 +213,7 @@ def extractEnum(declaration, enumClass):
 
     return enumClass[token.value]
 
+
 def extractDimensionalValue(declaration):
     value = None
     tokens = list(
@@ -235,6 +233,7 @@ def extractDimensionalValue(declaration):
         value = str(token.value)
     return value
 
+
 def extractColor(declaration):
     tokens = list(
         filter(lambda x: (isinstance(x, tinycss2.ast.IdentToken) or
@@ -249,6 +248,7 @@ def extractColor(declaration):
     else:
         value = '#{}'.format(token.value)
     return value
+
 
 def extractFontSize(declaration):
     tokens = list(
@@ -265,9 +265,11 @@ def extractFontSize(declaration):
         value = str(token.value)
     return value
 
+
 def extractFontFamily(declaration):
     tokens = filter(lambda x: isinstance(x, tinycss2.ast.IdentToken), declaration.value)
     return [x.value for x in tokens]
+
 
 def filterDeclarationErrors(configFileName, declarations):
     parseErrors = filter(lambda x: isinstance(x, tinycss2.ast.ParseError), declarations)

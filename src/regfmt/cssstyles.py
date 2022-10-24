@@ -18,6 +18,7 @@ from PIL import ImageFont
 import sys
 from regfmt import BASE_FONT_NAME
 
+
 class StrokeLinecap(Enum):
     butt = 'butt'
     round = 'round'
@@ -67,7 +68,7 @@ class TextStyle:
                 message = ('WARNING: body font-size specification of "{}" is unsupported in '
                            'CSS file for sizing the geometry of register fields. '
                            'Coercing font size value to {}pt.\n')
-                sys.stderr.write(message.format(fontSize, 12))
+                sys.stderr.write(message.format(self.fontSize, 12))
                 baseFontSize = 12
 
         for fontName in self.fontFamily:
@@ -80,6 +81,7 @@ class TextStyle:
                 break
 
         return font
+
 
 class LineStyle:
     def __init__(self,

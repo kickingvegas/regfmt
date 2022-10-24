@@ -19,20 +19,20 @@ import argparse
 class CommandLineParser:
     def __init__(self):
 
-        description = """
-        %(prog)s - generate SVG diagrams of control register-style data formats
-        """
-        epilog = """
-        Input file details can be found at <https://github.com/kickingvegas/regfmt>. 
-        Please report issues to <https://github.com/kickingvegas/regfmt/issues>. 
-        """
-                
+        description = ("%(prog)s - generate SVG diagrams of control "
+                       "register-style data formats")
+
+        epilog = ("Input file details can be found at "
+                  "<https://github.com/kickingvegas/regfmt>. "
+                  "Please report issues to "
+                  "<https://github.com/kickingvegas/regfmt/issues>.")
+
         self.parser = argparse.ArgumentParser(description=description,
                                               epilog=epilog)
         self.parser.add_argument('-v', '--version',
                                  action='store_true',
                                  help='print version information and exit')
-        
+
         self.parser.add_argument('-o', '--output',
                                  action='store',
                                  default='-',
@@ -44,7 +44,8 @@ class CommandLineParser:
                                  help='CSS style file')
 
         self.parser.add_argument('input', nargs='?', default='input.yaml',
-                                 help='input register format YAML file (default: input.yaml)')
-                
+                                 help=('input register format YAML file '
+                                       '(default: input.yaml)'))
+
     def run(self):
         return self.parser.parse_args()
