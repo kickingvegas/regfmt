@@ -96,51 +96,14 @@ class InputLoadAndValidate:
     def loadAndValidate(self):
         inputYAML = self.loadInput(self.parsedArguments)
         schemaYAML = self.loadInputSchema(INPUT_SCHEMA_YAML)
-
-        try:
-            result = validate(inputYAML, schemaYAML)
-            if result is not None:
-                # this should never happen
-                sys.stderr.write('ERROR: unexpected result from validate()\n')
-                sys.exit(1)
-
-        except exceptions.ValidationError as err:
-            # TODO: implement YAML ValidationError handling
-            message = 'ERROR: YAML file "{}" in path "{}": {}'
-            sys.stderr.write(message.format(self.parsedArguments.input,
-                                            err.json_path,
-                                            err.message))
-            sys.exit(1)
-
-            # print(err.json_path)
-            # print(err.message)
-            # print(err.path)
-            # print(err.relative_path)
-            # print(err.absolute_path)
-            # print(err.context)
-            # print(err.cause)
-            # print(err.instance)
-            # print(err.validator)
-            # print(err.schema_path)
-            # print(dir(err))
-
+        result = validate(inputYAML, schemaYAML)
         return inputYAML
         
     def loadInput(self, parsedArguments):
         with open(parsedArguments.input, 'r') as infile:
-            try:
-                yamlConfig = load(infile, Loader=Loader)
-            except ScannerError as err:
-                sys.stderr.write('ERROR: {0}\n'.format(err))
-                sys.exit(1)
-
+            yamlConfig = load(infile, Loader=Loader)
         return yamlConfig
 
     def loadInputSchema(self, schemaString):
-        try:
-            yamlConfig = safe_load(schemaString)
-        except ScannerError as err:
-            sys.stderr.write('ERROR: {0}\n'.format(err))
-            sys.exit(1)
-
+        yamlConfig = safe_load(schemaString)
         return yamlConfig

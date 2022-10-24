@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import errno
 import os
 import sys
 from regfmt import VERSION
@@ -22,6 +22,9 @@ from regfmt import InputLoadAndValidate
 from regfmt import TopLevel
 from regfmt import DRCChecker
 from regfmt import SVGWriter
+from jsonschema.exceptions import ValidationError
+from yaml.scanner import ScannerError
+from tinycss2.ast import Declaration, ParseError
 
 
 class RegisterFormat:
@@ -32,25 +35,53 @@ class RegisterFormat:
         self.stderr = sys.stderr
         self.parsedArguments = parsedArguments
 
+    def run(self):
+        parsedArguments = self.parsedArguments
+
         if parsedArguments.version:
-            sys.stdout.write('{0}\n'.format(self.version))
-            sys.exit(0)
+            self.stdout.write('{0}\n'.format(self.version))
+            return 0
 
         if parsedArguments.output != '-':
             outfile = open('{0}'.format(parsedArguments.output), 'w')
             self.stdout = outfile
 
         if not os.path.exists(parsedArguments.input):
-            message = ('ERROR: file "{0}" does not exist. '
-                       'Please specify an input file.\n')
-            sys.stderr.write(message.format(parsedArguments.input))
-            sys.exit(1)
+            message = 'ERROR: file "{0}" not found.\n'
+            self.stderr.write(message.format(parsedArguments.input))
+            return errno.ENOENT
 
-    def run(self):
         # Load and validate input YAML
         loader = InputLoadAndValidate(self.parsedArguments)
-        inputYAML = loader.loadAndValidate()
-        # print(inputYAML)
+
+        try:
+            inputYAML = loader.loadAndValidate()
+            # print(inputYAML)
+        except ValidationError as err:
+            message = 'ERROR: YAML file "{}" in path "{}": {}'
+            self.stderr.write(message.format(self.parsedArguments.input,
+                                             err.json_path,
+                                             err.message))
+
+            # print(err.json_path)
+            # print(err.message)
+            # print(err.path)
+            # print(err.relative_path)
+            # print(err.absolute_path)
+            # print(err.context)
+            # print(err.cause)
+            # print(err.instance)
+            # print(err.validator)
+            # print(err.schema_path)
+            # print(dir(err))
+
+            return errno.EINVAL
+        except ScannerError as err:
+            self.stderr.write('ERROR: {0}\n'.format(err))
+            return errno.EINVAL
+
+        except:
+            print('wtf')
 
         # Deserialize input YAML into native object DB
         registerDB = TopLevel(config=inputYAML)
@@ -61,14 +92,42 @@ class RegisterFormat:
         drcChecker.subIndexFields(registerDB)
 
         # Render SVG
-        svgWriter = SVGWriter(registerDB,
-                              self.stdout,
-                              configFileName=self.parsedArguments.style)
+        try:
+            svgWriter = SVGWriter(registerDB,
+                                  self.stdout,
+                                  configFileName=self.parsedArguments.style)
+        except FileNotFoundError as err:
+            message = 'ERROR: {}: "{}"  Exiting…\n'.format(err.strerror, err.filename)
+            self.stderr.write(message)
+            return err.errno
+        except ValueError as err:
+            if len(err.args) and isinstance(err.args[0], Declaration):
+                errorDeclaration: Declaration = err.args[0]
+                errorMessage: str = err.args[1]
+                message = 'ERROR: {} (line {}, row {}): {}\n'.format(self.parsedArguments.style,
+                                                                     errorDeclaration.source_line,
+                                                                     errorDeclaration.source_column,
+                                                                     errorMessage)
+                self.stderr.write(message)
+
+            elif len(err.args) and isinstance(err.args[0], ParseError):
+                parseError: ParseError = err.args[0]
+                errorMessage: str = err.args[1]
+                self.stderr.write(errorMessage)
+
+            else:
+                message = 'ERROR: {} Exiting…\n'.format(err.args[0])
+                self.stderr.write(message)
+
+            return errno.EINVAL
+
         svgWriter.writeSVG()
 
         # wrap up
         if self.stdout != sys.stdout:
             self.stdout.close()
+
+        return 0
 
 
 if __name__ == '__main__':
