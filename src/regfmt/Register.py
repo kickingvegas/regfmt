@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from regfmtlib import Constants
-from regfmtlib import Endian
-from regfmtlib import Field
+from regfmt import Constants
+from regfmt import Endian
+from regfmt import Field
 
 DEFAULT_WIDTH = Constants.DEFAULT_WIDTH
 
+
 class Register:
-    def __init__(self, parent, config=None, width: int=DEFAULT_WIDTH, endian: Endian=Endian.bigByte):
+    def __init__(self, parent, config=None, width: int = DEFAULT_WIDTH, endian: Endian = Endian.bigBit):
         self.name: str = None
         self.width: int = width
         self.endian: Endian = endian

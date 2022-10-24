@@ -13,19 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from regfmtlib import Register
-from regfmtlib import Field
-from regfmtlib import TopLevel
-from regfmtlib import Endian
+from regfmt import Register
+from regfmt import Field
+from regfmt import TopLevel
+from regfmt import Endian
 from operator import add
 from functools import reduce
 import sys
+
 
 class DRCChecker:
     def __init__(self):
         self.foo = None
         self.errors = []
-
 
     def check(self, registerDB: TopLevel):
         # TODO: this should be a throwing method
@@ -39,9 +39,14 @@ class DRCChecker:
             widths = [x.width for x in fields]
             sum = reduce(add, widths)
             if sum != register.width:
-                message = 'DRC Violation: sum total of widths of fields ({0}) must equal the register width ({1}) for register {2}\n'.format(sum, register.width, register.name)
-                self.errors.append(message)
+                message = ('DRC Violation: sum total of widths of '
+                           'fields ({0}) must equal the register width '
+                           '({1}) for register {2}\n')
+                self.errors.append(message.format(sum,
+                                                  register.width,
+                                                  register.name))
 
+        # TODO: this should be thrown
         for message in self.errors:
             sys.stderr.write(message)
 
@@ -67,21 +72,18 @@ class DRCChecker:
                     field.leftIndex = count
                     count -= (field.width - 1)
                     field.rightIndex = count
-                    #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
+# print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
                 elif endian == Endian.littleBit.value:
                     count += 1
                     field.leftIndex = count
                     count += (field.width - 1)
                     field.rightIndex = count
-                    #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
+# print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
 
                 elif endian == Endian.littleByte.value:
                     count += 1
                     field.rightIndex = count
                     count += (field.width - 1)
                     field.leftIndex = count
-                    #print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))
-
-
-
+# print('{0}:{1} {2}'.format(field.leftIndex, field.rightIndex, field.name))

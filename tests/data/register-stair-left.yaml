@@ -1,0 +1,23 @@
+##
+# Example YAML file for regfmt
+
+width: 8
+endian: bigBit
+
+registers:
+  - name: R1
+    fields:
+      - width: 1
+        name: Coprocessor Usable
+
+      - width: 1
+        name: Bootstrap Exception Vectors
+
+      - width: 2
+        name: Parity Errors
+
+      - width: 4
+        name: Interrupt Waiting
+
+layout:
+  field-name-align: stair-left

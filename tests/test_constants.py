@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Field:
-    def __init__(self, config=None):
-        self.name: str = None
-        self.width: int = None
-        self.leftIndex: int = None
-        self.rightIndex: int = None
+import unittest
+from regfmt import Constants
 
-        # !!!: Note config should already be validated.
-        if config:
-            self.name = config['name']
-            self.width = config['width']
+
+class TestConstants(unittest.TestCase):
+    def test_default_width(self):
+        self.assertEqual(Constants.DEFAULT_WIDTH, 32)
+
+
+if __name__ == '__main__':
+    unittest.main()
+    

@@ -13,10 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+import unittest
+import random
+import string
 
-class Endian(Enum):
-    littleByte = "littleByte"
-    bigByte = "bigByte"
-    littleBit = "littleBit"
-    bigBit = "bigBit"
+
+def auditAttributeExistence(testbench: unittest.TestCase, obj, attributes):
+    for attribute in attributes:
+        testbench.assertTrue(hasattr(obj, attribute), '{} missing attribute: {}'.format(obj, attribute))
+
+
+def randomAsciiString(k: int = 5):
+    data = string.ascii_letters + string.digits
+    result = ''.join(random.choices(data, k=k))
+    return result

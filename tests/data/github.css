@@ -5,7 +5,7 @@
  */
 
 body {
-    font-family: Futura, Helvetica, Arial, Verdana;
+    font-family: Futura, Helvetica, Arial, Verdana, FreeSans;
     font-size: 12pt;
     font-style: normal;
     font-weight: normal;
@@ -20,9 +20,13 @@ register-name {
 }
 
 field-name {
-    fill: black;
+    fill: teal;
 }
 
 field-index {
     fill: darkslategrey;
+}
+
+field-name-line: {
+    stroke: purple;
 }

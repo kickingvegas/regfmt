@@ -14,17 +14,17 @@
 # limitations under the License.
 
 import os
-import sys
 import errno
-
 import tinycss2
-from regfmtlib.cssstyles import *
+from regfmt.cssstyles import *
 
 classNameMap = {
                 'register-name': 'registerName',
                 'field-name': 'fieldName',
-                'field-index': 'fieldIndex'
+                'field-index': 'fieldIndex',
+                'field-name-line': 'fieldNameLine'
                 }
+
 
 def parseCSS(configFileName: str, styleSheet: StyleSheet):
     if configFileName is None:
@@ -50,9 +50,9 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
         filterDeclarationErrors(configFileName, declarations)
 
         className = rule.prelude[0].value
-        #print(className)
 
-        if className not in ('body', 'register', 'field', 'register-name', 'field-name', 'field-index'):
+        if className not in ('body', 'register', 'field', 'register-name',
+                             'field-name', 'field-index', 'field-name-line'):
             # list of legal names
             continue
 
@@ -61,48 +61,34 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                                'fill',
                                'stroke', 'stroke-width', 'stroke-linecap')
 
-            try:
-                for declaration in declarations:
-                    if declaration.name not in legalAttributes:
-                        continue
+            for declaration in declarations:
+                if declaration.name not in legalAttributes:
+                    continue
 
-                    elif declaration.name == 'font-family':
-                        styleSheet.body.fontFamily = extractFontFamily(declaration)
+                elif declaration.name == 'font-family':
+                    styleSheet.body.fontFamily = extractFontFamily(declaration)
 
-                    elif declaration.name == 'font-size':
-                        styleSheet.body.fontSize = extractDimensionalValue(declaration)
-                        #styleSheet.registerName.fontSize = styleSheet.body.fontSize
-                        #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
-                        # TODO: deal with fieldIndex
+                elif declaration.name == 'font-size':
+                    styleSheet.body.fontSize = extractDimensionalValue(declaration)
+                    # TODO: deal with fieldIndex
 
-                    elif declaration.name == 'font-style':
-                        styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
+                elif declaration.name == 'font-style':
+                    styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
 
-                    elif declaration.name == 'font-weight':
-                        styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
+                elif declaration.name == 'font-weight':
+                    styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
 
-                    elif declaration.name == 'fill':
-                        styleSheet.body.fill = extractColor(declaration)
+                elif declaration.name == 'fill':
+                    styleSheet.body.fill = extractColor(declaration)
 
-                    elif declaration.name == 'stroke':
-                        styleSheet.body.stroke = extractColor(declaration)
+                elif declaration.name == 'stroke':
+                    styleSheet.body.stroke = extractColor(declaration)
 
-                    elif declaration.name == 'stroke-width':
-                        styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
+                elif declaration.name == 'stroke-width':
+                    styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
 
-                    elif declaration.name == 'stroke-linecap':
-                        styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
-
-            except ValueError as err:
-                if len(err.args) and isinstance(err.args[0], tinycss2.ast.Declaration):
-                    errorDeclaration: tinycss2.ast.Declaration = err.args[0]
-                    errorMessage: str = err.args[1]
-                    message = 'ERROR: {} (line {}, row {}): {}\n'.format(configFileName,
-                                                                       errorDeclaration.source_line,
-                                                                       errorDeclaration.source_column,
-                                                                       errorMessage)
-                    sys.stderr.write(message)
-                    sys.exit(1)
+                elif declaration.name == 'stroke-linecap':
+                    styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
 
         elif className in ('register', 'field'):
             for declaration in declarations:
@@ -118,6 +104,17 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                 elif declaration.name == 'stroke-linecap':
                     getattr(styleSheet, className).strokeLinecap = extractEnum(declaration, StrokeLinecap)
 
+        elif className == 'field-name-line':
+            for declaration in declarations:
+                if declaration.name == 'stroke':
+                    getattr(styleSheet, classNameMap[className]).stroke = extractColor(declaration)
+
+                elif declaration.name == 'stroke-width':
+                    getattr(styleSheet, classNameMap[className]).strokeWidth = extractDimensionalValue(declaration)
+
+                elif declaration.name == 'stroke-linecap':
+                    getattr(styleSheet, classNameMap[className]).strokeLinecap = extractEnum(declaration, StrokeLinecap)
+
         elif className in ('register-name', 'field-name', 'field-index'):
             for declaration in declarations:
                 if declaration.name == 'font-family':
@@ -132,34 +129,69 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                 elif declaration.name == 'font-weight':
                     getattr(styleSheet, classNameMap[className]).fontWeight = extractEnum(declaration, FontWeight)
 
+                elif declaration.name == 'fill':
+                    getattr(styleSheet, classNameMap[className]).fill = extractColor(declaration)
+
 
 def cascadeStyles(styleSheet):
-    ## Cascade styles in StyleSheet
+    # Cascade styles in StyleSheet
     # body > register, field if property.value is None
     # body > register-name, field-name, field-index if property.value is None
     # cascade rect style
-    for obj in [styleSheet.register, styleSheet.field]:
-        if getattr(obj, 'fill') is None:
-            setattr(obj, 'fill', styleSheet.body.fill)
-        if getattr(obj, 'stroke') is None:
-            setattr(obj, 'stroke', styleSheet.body.stroke)
-        if getattr(obj, 'strokeWidth') is None:
-            setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
-        if getattr(obj, 'strokeLinecap') is None:
-            setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
-    # cascade body text styles to child styles
-    for obj in [styleSheet.registerName, styleSheet.fieldName, styleSheet.fieldIndex]:
+
+    obj = styleSheet.register
+    if getattr(obj, 'fill') is None:
+        setattr(obj, 'fill', styleSheet.body.fill)
+    if getattr(obj, 'stroke') is None:
+        setattr(obj, 'stroke', styleSheet.body.stroke)
+    if getattr(obj, 'strokeWidth') is None:
+        setattr(obj, 'strokeWidth', styleSheet.body.strokeWidth)
+    if getattr(obj, 'strokeLinecap') is None:
+        setattr(obj, 'strokeLinecap', styleSheet.body.strokeLinecap)
+
+    obj = styleSheet.field
+    if getattr(obj, 'fill') is None:
+        setattr(obj, 'fill', styleSheet.register.fill)
+    if getattr(obj, 'stroke') is None:
+        setattr(obj, 'stroke', styleSheet.register.stroke)
+    if getattr(obj, 'strokeWidth') is None:
+        setattr(obj, 'strokeWidth', styleSheet.register.strokeWidth)
+    if getattr(obj, 'strokeLinecap') is None:
+        setattr(obj, 'strokeLinecap', styleSheet.register.strokeLinecap)
+
+    obj = styleSheet.fieldNameLine
+    if getattr(obj, 'stroke') is None:
+        setattr(obj, 'stroke', styleSheet.field.stoke)
+    if getattr(obj, 'strokeWidth') is None:
+        setattr(obj, 'strokeWidth', styleSheet.field.strokeWidth)
+    if getattr(obj, 'strokeLinecap') is None:
+        setattr(obj, 'strokeLinecap', styleSheet.field.xstrokeLinecap)
+
+    obj = styleSheet.registerName
+    if getattr(obj, 'fontFamily') is None:
+        setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
+    if getattr(obj, 'fontStyle') is None:
+        setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
+    if getattr(obj, 'fontWeight') is None:
+        setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
+    if getattr(obj, 'fontSize') is None:
+        setattr(obj, 'fontSize', styleSheet.body.fontSize)
+    # !!!: Because fill attribute used for both text and rect with
+    # different semantics, using rect.stroke value for text.fill
+    if getattr(obj, 'fill') is None:
+        setattr(obj, 'fill', styleSheet.body.stroke)
+
+    for obj in [styleSheet.fieldName, styleSheet.fieldIndex]:
         if getattr(obj, 'fontFamily') is None:
-            setattr(obj, 'fontFamily', styleSheet.body.fontFamily)
+            setattr(obj, 'fontFamily', styleSheet.registerName.fontFamily)
         if getattr(obj, 'fontStyle') is None:
-            setattr(obj, 'fontStyle', styleSheet.body.fontStyle)
+            setattr(obj, 'fontStyle', styleSheet.registerName.fontStyle)
         if getattr(obj, 'fontWeight') is None:
-            setattr(obj, 'fontWeight', styleSheet.body.fontWeight)
+            setattr(obj, 'fontWeight', styleSheet.registerName.fontWeight)
         if getattr(obj, 'fontSize') is None:
-            setattr(obj, 'fontSize', styleSheet.body.fontSize)
-        # !!!: Because fill attribute used for both text and rect with different semantics, using rect.stroke value for text.fill
+            setattr(obj, 'fontSize', styleSheet.registerName.fontSize)
         if getattr(obj, 'fill') is None:
-            setattr(obj, 'fill', styleSheet.body.stroke)
+            setattr(obj, 'fill', styleSheet.registerName.fill)
 
 
 def extractEnum(declaration, enumClass):
@@ -181,6 +213,7 @@ def extractEnum(declaration, enumClass):
 
     return enumClass[token.value]
 
+
 def extractDimensionalValue(declaration):
     value = None
     tokens = list(
@@ -200,6 +233,7 @@ def extractDimensionalValue(declaration):
         value = str(token.value)
     return value
 
+
 def extractColor(declaration):
     tokens = list(
         filter(lambda x: (isinstance(x, tinycss2.ast.IdentToken) or
@@ -214,6 +248,7 @@ def extractColor(declaration):
     else:
         value = '#{}'.format(token.value)
     return value
+
 
 def extractFontSize(declaration):
     tokens = list(
@@ -230,9 +265,11 @@ def extractFontSize(declaration):
         value = str(token.value)
     return value
 
+
 def extractFontFamily(declaration):
     tokens = filter(lambda x: isinstance(x, tinycss2.ast.IdentToken), declaration.value)
     return [x.value for x in tokens]
+
 
 def filterDeclarationErrors(configFileName, declarations):
     parseErrors = filter(lambda x: isinstance(x, tinycss2.ast.ParseError), declarations)
@@ -241,6 +278,4 @@ def filterDeclarationErrors(configFileName, declarations):
                                                                       parseError.source_line,
                                                                       parseError.source_column,
                                                                       parseError.message)
-
-        sys.stderr.write(message)
-        sys.exit(1)
+        raise ValueError(parseError, message)

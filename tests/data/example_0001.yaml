@@ -22,33 +22,31 @@ registers:
 
   - name: R2
     fields:
-      - name: A1
-        width: 8
+      - name: B7
+        width: 4
+      - name: B0
+        width: 4
 
-      - name: A2
-        width: 8
+      - width: 12
+        name: B_I/O
 
-      - name: A3
-        width: 8
-
-      - name: A4
-        width: 8
+      - width: 4
+        name: C_I/O
+        
+      - width: 8
+        name: RESERVED
 
   - name: R3
     fields:
-      - name: A1
+      - name: Control
         width: 8
 
-      - name: A2
+      - name: Data
         width: 8
 
-      - name: A3
-        width: 8
-
-      - name: A4
-        width: 8
+      - name: Address
+        width: 16
 
 layout:
-   registers: lr
-   register_name: left
-   field_name: center
+  field-name-align: center
+  register-layout: tb

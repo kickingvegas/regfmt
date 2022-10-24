@@ -1,0 +1,22 @@
+##
+# Example YAML file for regfmt
+
+width: 32
+endian: bigBit
+
+registers:
+  - name: R1
+    fields:
+      - width: 8
+        name: A3
+
+      - width: 8
+        name: A2
+
+      - width: 8
+        name: A1
+
+      - width: 8
+        name: A0
+layout:
+  field-name-align: center

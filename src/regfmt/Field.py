@@ -13,3 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+class Field:
+    def __init__(self, config=None):
+        self.name: str = None
+        self.width: int = None
+        self.leftIndex: int = None
+        self.rightIndex: int = None
+
+        # !!!: Note config should already be validated.
+        if config:
+            if 'name' in config:
+                self.name = config['name']
+            if 'width' in config:
+                self.width = config['width']

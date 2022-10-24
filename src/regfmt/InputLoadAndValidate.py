@@ -13,12 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from jsonschema import validate, exceptions
-from yaml import Loader, Dumper, load, safe_load
-from yaml.scanner import ScannerError
-import sys
+from jsonschema import validate
+from yaml import Loader, load, safe_load
 
-INPUT_SCHEMA_YAML="""
+INPUT_SCHEMA_YAML = """
 type: object
 properties: 
   width:
@@ -36,23 +34,10 @@ properties:
   layout:
     type: object
     properties:
-      registers:
-        enum:
-          - tb
-          - lr
-
-      register_name:
-        enum:
-          - left
-          - right
-          - top
-          - bottom
-          - null
-      field_name:
+      field-name-align:
         enum:
           - center
-          - left
-          - right
+          - stair-left
 
 required:
   - width
@@ -101,6 +86,7 @@ $defs:
       - fields
 """
 
+
 class InputLoadAndValidate:
     def __init__(self, parsedArguments):
         self.parsedArguments = parsedArguments
@@ -108,45 +94,14 @@ class InputLoadAndValidate:
     def loadAndValidate(self):
         inputYAML = self.loadInput(self.parsedArguments)
         schemaYAML = self.loadInputSchema(INPUT_SCHEMA_YAML)
-
-        try:
-            result = validate(inputYAML, schemaYAML)
-            if result is not None:
-                # this should never happen
-                sys.stderr.write('ERROR: unexpected result from validate()\n')
-                sys.exit(1)
-
-        except exceptions.ValidationError as err:
-            print(err.json_path)
-            print(err.message)
-            print(err.path)
-            print(err.relative_path)
-            print(err.absolute_path)
-            print(err.context)
-            print(err.cause)
-            print(err.instance)
-            print(err.validator)
-            print(err.schema_path)
-            print(dir(err))
-
+        validate(inputYAML, schemaYAML)
         return inputYAML
         
     def loadInput(self, parsedArguments):
         with open(parsedArguments.input, 'r') as infile:
-            try:
-                yamlConfig = load(infile, Loader=Loader)
-            except ScannerError as err:
-                sys.stderr.write('ERROR: {0}\n'.format(err))
-                sys.exit(1)
-
+            yamlConfig = load(infile, Loader=Loader)
         return yamlConfig
 
     def loadInputSchema(self, schemaString):
-        try:
-            yamlConfig = safe_load(schemaString)
-        except ScannerError as err:
-            sys.stderr.write('ERROR: {0}\n'.format(err))
-            sys.exit(1)
-
-
+        yamlConfig = safe_load(schemaString)
         return yamlConfig
