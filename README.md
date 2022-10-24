@@ -6,7 +6,7 @@ This project is a **work in progress**.
 
 Example output SVG:
 
-![example svg](http://yummymelon.com/images/example_0001.svg)
+![example svg](http://yummymelon.com/images/example_0001-github.svg)
 
 # Features
 

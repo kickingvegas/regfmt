@@ -1,11 +1,11 @@
 * regfmt
 This project is a *work in progress*.
 
-*regfmt* is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however re-imagined using contemporary file formats.
+*regfmt* is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however re-imagined using contemporary (circa 2022) file formats.
 
 Example output of *regfmt*:
 
-[[../tests/control/example_0001.svg]]
+[[../tests/control/example_0001-github.svg]]
 
 * Features
 - SVG output
@@ -138,8 +138,17 @@ The following example CSS file illustrates how to style the output SVG diagrams 
 #+end_src
 
 * Installation
+*regfmt* supports installation via [[https://pypi.org/project/regfmt/][PyPi]]. It is recommended that you do this in a Python virtual environment.
 
-*regfmt* uses a Python virtual environment to support its execution. From the top-level project directory, run the Makefile target ~install~ to create the virtual environment ~.venv~ and install the /pip/ modules required by *regfmt*. It will also create the symlink ~.venv/bin/regfmt~ to ~regfmt.py~.
+#+begin_src sh
+  $ python3 -m venv .venv
+  $ source .venv/bin/activate
+  (.venv) pip install regfmt
+#+end_src
+
+** Installing for Development
+
+*regfmt* uses a Python virtual environment to support its execution. From the top-level project directory, run the Makefile target ~install~ to create the virtual environment ~.venv~ and install the /pip/ modules required by *regfmt*. 
 
 #+begin_src sh
   $ make install
