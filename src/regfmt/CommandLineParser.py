@@ -17,8 +17,7 @@ import argparse
 
 
 class CommandLineParser:
-    def __init__(self):
-
+    def __init__(self, exit_on_error: bool = True):
         description = ("%(prog)s - generate SVG diagrams of control "
                        "register-style data formats")
 
@@ -28,7 +27,9 @@ class CommandLineParser:
                   "<https://github.com/kickingvegas/regfmt/issues>.")
 
         self.parser = argparse.ArgumentParser(description=description,
-                                              epilog=epilog)
+                                              epilog=epilog,
+                                              exit_on_error=exit_on_error)
+
         self.parser.add_argument('-v', '--version',
                                  action='store_true',
                                  help='print version information and exit')
@@ -43,7 +44,15 @@ class CommandLineParser:
                                  default=None,
                                  help='CSS style file')
 
-        self.parser.add_argument('input', nargs='?', default='input.yaml',
+        self.parser.add_argument('-t', '--template',
+                                 action='store',
+                                 choices=['yaml', 'css', 'yamlcss'],
+                                 default=None,
+                                 help='Generate template YAML and/or CSS files')
+
+        self.parser.add_argument('input',
+                                 nargs='?',
+                                 default='input.yaml',
                                  help=('input register format YAML file '
                                        '(default: input.yaml)'))
 

@@ -70,6 +70,11 @@ readme-examples:
 	regfmt -s tests/data/github.css -o tests/control/register.svg tests/data/register.yaml
 	regfmt -s tests/data/github.css -o tests/control/register-stair-left.svg tests/data/register-stair-left.yaml
 
+control-examples:
+	regfmt -o tests/control/example_0001.svg tests/data/example_0001.yaml
+	regfmt -o tests/control/example_0002.svg tests/data/example_0002.yaml
+	regfmt -o tests/control/example_0003.svg tests/data/example_0003.yaml
+
 lint:
 	flake8 src/regfmt/*.py
 
@@ -87,6 +92,7 @@ clean-tests \
 install-pip-requirements \
 freeze-pip-requirements \
 readme-examples \
+control-examples \
 package \
 upload \
 coverage \
