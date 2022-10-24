@@ -35,12 +35,11 @@ field-name-line {
     stroke-linecap: butt;
 }
 
-/*
 register-name {
     font-size: 12pt;
     fill: black;
 }
-*/
+
 
 field-name {
     font-family: Helvetica;
