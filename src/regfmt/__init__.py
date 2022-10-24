@@ -41,4 +41,4 @@ from .RegisterFormat import RegisterFormat
 
 def main():
     app = RegisterFormat(CommandLineParser().run())
-    app.run()
+    return app.run()

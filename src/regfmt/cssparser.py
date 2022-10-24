@@ -61,48 +61,37 @@ def parseCSS(configFileName: str, styleSheet: StyleSheet):
                                'fill',
                                'stroke', 'stroke-width', 'stroke-linecap')
 
-            try:
-                for declaration in declarations:
-                    if declaration.name not in legalAttributes:
-                        continue
 
-                    elif declaration.name == 'font-family':
-                        styleSheet.body.fontFamily = extractFontFamily(declaration)
+            for declaration in declarations:
+                if declaration.name not in legalAttributes:
+                    continue
 
-                    elif declaration.name == 'font-size':
-                        styleSheet.body.fontSize = extractDimensionalValue(declaration)
-                        #styleSheet.registerName.fontSize = styleSheet.body.fontSize
-                        #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
-                        # TODO: deal with fieldIndex
+                elif declaration.name == 'font-family':
+                    styleSheet.body.fontFamily = extractFontFamily(declaration)
 
-                    elif declaration.name == 'font-style':
-                        styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
+                elif declaration.name == 'font-size':
+                    styleSheet.body.fontSize = extractDimensionalValue(declaration)
+                    #styleSheet.registerName.fontSize = styleSheet.body.fontSize
+                    #styleSheet.fieldName.fontSize = styleSheet.body.fontSize
+                    # TODO: deal with fieldIndex
 
-                    elif declaration.name == 'font-weight':
-                        styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
+                elif declaration.name == 'font-style':
+                    styleSheet.body.fontStyle = extractEnum(declaration, FontStyle)
 
-                    elif declaration.name == 'fill':
-                        styleSheet.body.fill = extractColor(declaration)
+                elif declaration.name == 'font-weight':
+                    styleSheet.body.fontWeight = extractEnum(declaration, FontWeight)
 
-                    elif declaration.name == 'stroke':
-                        styleSheet.body.stroke = extractColor(declaration)
+                elif declaration.name == 'fill':
+                    styleSheet.body.fill = extractColor(declaration)
 
-                    elif declaration.name == 'stroke-width':
-                        styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
+                elif declaration.name == 'stroke':
+                    styleSheet.body.stroke = extractColor(declaration)
 
-                    elif declaration.name == 'stroke-linecap':
-                        styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
+                elif declaration.name == 'stroke-width':
+                    styleSheet.body.strokeWidth = extractDimensionalValue(declaration)
 
-            except ValueError as err:
-                if len(err.args) and isinstance(err.args[0], tinycss2.ast.Declaration):
-                    errorDeclaration: tinycss2.ast.Declaration = err.args[0]
-                    errorMessage: str = err.args[1]
-                    message = 'ERROR: {} (line {}, row {}): {}\n'.format(configFileName,
-                                                                       errorDeclaration.source_line,
-                                                                       errorDeclaration.source_column,
-                                                                       errorMessage)
-                    sys.stderr.write(message)
-                    sys.exit(1)
+                elif declaration.name == 'stroke-linecap':
+                    styleSheet.body.strokeLinecap = extractEnum(declaration, StrokeLinecap)
 
         elif className in ('register', 'field'):
             for declaration in declarations:
@@ -287,6 +276,4 @@ def filterDeclarationErrors(configFileName, declarations):
                                                                       parseError.source_line,
                                                                       parseError.source_column,
                                                                       parseError.message)
-
-        sys.stderr.write(message)
-        sys.exit(1)
+        raise ValueError(parseError, message)
