@@ -66,7 +66,7 @@ clean-tests:
 	make -C tests clean
 
 readme-examples:
-	regfmt -s tests/data/github.css -o tests/control/example_0001.svg tests/data/example_0001.yaml
+	regfmt -s tests/data/github.css -o tests/control/example_0001-github.svg tests/data/example_0001.yaml
 	regfmt -s tests/data/github.css -o tests/control/register.svg tests/data/register.yaml
 	regfmt -s tests/data/github.css -o tests/control/register-stair-left.svg tests/data/register-stair-left.yaml
 

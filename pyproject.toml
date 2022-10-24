@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "regfmt"
-version = "0.1.10a1"
+version = "0.1.10"
 authors = [
   { name="Charles Choi", email="kickingvegas@gmail.com"}
 ]
