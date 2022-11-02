@@ -33,7 +33,7 @@ class Register:
 
     def initFromConfig(self, config):
         self.name = config['name']
-        self.width = config['width'] if 'width' in config else self.parent.width
+        self.width = int(config['width']) if 'width' in config else self.parent.width
         self.endian = config['endian'] if 'endian' in config else self.parent.endian
 
         if 'fields' in config:
