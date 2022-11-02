@@ -17,7 +17,9 @@ import unittest
 import random
 import string
 import difflib
-
+from regfmt import CommandLineParser
+from regfmt import RegisterFormat
+from io import StringIO
 
 def auditAttributeExistence(testbench: unittest.TestCase, obj, attributes):
     for attribute in attributes:
@@ -39,3 +41,13 @@ def fileCompareContents(test_filename: str, control_filename: str):
 
     diff = list(difflib.unified_diff(testLines, controlLines, fromfile=test_filename, tofile=control_filename))
     return diff
+
+
+def run_register_format(args):
+    clp = CommandLineParser(exit_on_error=False)
+    parsedArgs = clp.parser.parse_args(args)
+    registerFormat = RegisterFormat(parsedArgs)
+    registerFormat.stderr = StringIO()
+    result = registerFormat.run()
+    stderr_output = registerFormat.stderr.getvalue()
+    return (result, stderr_output)

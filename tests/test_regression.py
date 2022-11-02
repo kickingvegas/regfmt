@@ -12,28 +12,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 import unittest
-from regfmt import CommandLineParser
-from regfmt import RegisterFormat
-from io import StringIO
 import errno
+from tests.testutils import run_register_format, fileCompareContents
 
 
 class TestRegression(unittest.TestCase):
 
-    def test_missingWidth(self):
+    def test_missingWidth2(self):
         controlFileName = 'tests/data/{}.yaml'.format('missing-width')
-        clp = CommandLineParser(exit_on_error=False)
-        parsedArgs = clp.parser.parse_args([controlFileName])
-
-        registerFormat = RegisterFormat(parsedArgs)
-        registerFormat.stderr = StringIO()
-        result = registerFormat.run()
-        testValue = registerFormat.stderr.getvalue()
-        self.assertEqual(errno.EINVAL, result)
         message = "ERROR: YAML file \"{}\" in path \"$.registers[0].fields[1].width\": None is not of type 'integer'\n"
-        self.assertEqual(testValue, message.format(controlFileName))
+        args = [controlFileName]
+        result, stderr_output = run_register_format(args)
+        self.assertEqual(result, errno.EINVAL)
+        self.assertEqual(stderr_output, message.format(controlFileName))
 
+    def test_float_for_int(self):
+        controlName = 'float-for-int'
+        outputName = 'tests/output/{}.svg'.format(controlName)
+        inputName = 'tests/data/{}.yaml'.format(controlName)
+        controlName = 'tests/control/{}.svg'.format(controlName)
+        args = ['-o',
+                outputName,
+                inputName]
+        result, stderr_output = run_register_format(args)
+        self.assertEqual(result, 0)
+
+        diff = fileCompareContents(test_filename=outputName, control_filename=controlName)
+        self.assertEqual(len(diff), 0, "File miscompare: {}, {}".format(outputName, controlName))
+        os.unlink(outputName)
 
 if __name__ == '__main__':
     unittest.main()

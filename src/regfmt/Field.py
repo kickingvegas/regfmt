@@ -26,4 +26,4 @@ class Field:
             if 'name' in config:
                 self.name = config['name']
             if 'width' in config:
-                self.width = config['width']
+                self.width = int(config['width'])
