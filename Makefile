@@ -74,7 +74,7 @@ control-examples:
 	regfmt -o tests/control/example_0001.svg tests/data/example_0001.yaml
 	regfmt -o tests/control/example_0002.svg tests/data/example_0002.yaml
 	regfmt -o tests/control/example_0003.svg tests/data/example_0003.yaml
-
+	regfmt -o tests/control/float-for-int.svg tests/data/float-for-int.yaml
 lint:
 	flake8 src/regfmt/*.py
 
