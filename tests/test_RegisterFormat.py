@@ -18,20 +18,8 @@ from regfmt import CommandLineParser
 from regfmt import RegisterFormat
 from io import StringIO
 from regfmt import VERSION
-import difflib
 import errno
-from tests.testutils import randomAsciiString
-
-
-def fileCompareContents(test_filename: str, control_filename: str):
-    with open(test_filename) as infile:
-        testLines = infile.readlines()
-
-    with open(control_filename) as infile:
-        controlLines = infile.readlines()
-
-    diff = list(difflib.unified_diff(testLines, controlLines, fromfile=test_filename, tofile=control_filename))
-    return diff
+from tests.testutils import randomAsciiString, fileCompareContents
 
 
 class TestRegisterFormat(unittest.TestCase):

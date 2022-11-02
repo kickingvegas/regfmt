@@ -46,7 +46,7 @@ class TopLevel:
         self.layout = Layout()
 
         if config:
-            self.width = config['width']
+            self.width = int(config['width'])
             self.endian = config['endian']
 
             if 'registers' in config:
