@@ -62,7 +62,7 @@ class RegisterFormat:
             inputYAML = loader.loadAndValidate()
             # print(inputYAML)
         except ValidationError as err:
-            message = 'ERROR: YAML file "{}" in path "{}": {}'
+            message = 'ERROR: YAML file "{}" in path "{}": {}\n'
             self.stderr.write(message.format(self.parsedArguments.input,
                                              err.json_path,
                                              err.message))
