@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from os import uname
-VERSION = '0.9.0'
+VERSION = '0.9.1'
 BASE_FONT_NAME = 'Helvetica'
 
 unameObj = uname()
