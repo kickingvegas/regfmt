@@ -16,6 +16,7 @@
 import unittest
 import random
 import string
+import difflib
 
 
 def auditAttributeExistence(testbench: unittest.TestCase, obj, attributes):
@@ -27,3 +28,14 @@ def randomAsciiString(k: int = 5):
     data = string.ascii_letters + string.digits
     result = ''.join(random.choices(data, k=k))
     return result
+
+
+def fileCompareContents(test_filename: str, control_filename: str):
+    with open(test_filename) as infile:
+        testLines = infile.readlines()
+
+    with open(control_filename) as infile:
+        controlLines = infile.readlines()
+
+    diff = list(difflib.unified_diff(testLines, controlLines, fromfile=test_filename, tofile=control_filename))
+    return diff

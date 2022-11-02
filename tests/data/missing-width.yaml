@@ -1,0 +1,24 @@
+# regfmt https://github.com/kickingvegas/regfmt
+# ARM Coretex-M3 Program Status Register
+# https://developer.arm.com/documentation/dui0552/a/the-cortex-m3-processor/programmers-model/core-registers
+
+width: 32
+endian: bigBit
+layout:
+  field-name-align: stair-left
+registers:
+- name: "APSR: Application Program Status Register"
+  fields:
+    - name: "N: Negative flag"
+      width: 1
+    - name: "Z: Zero flag"
+      width: 
+    - name: "C: Carry or borrow flag"
+      width: 1
+    - name: "V: Overflow flag"
+      width: 1
+    - name: "Q: Saturation flag"
+      width: 1
+    - name: Reserved
+      width: 27
+      
