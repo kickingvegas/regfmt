@@ -1,3 +1,6 @@
+#+BEGIN_HTML
+<a href="https://pypi.org/project/regfmt/"><img alt="PyPI" src="https://img.shields.io/pypi/v/regfmt"></a>
+#+END_HTML
 * regfmt
 *regfmt* is a command line utility to generate SVG diagrams for control register-style data formats. It is inspired by the /dformat/ command from the /troff/ family of tools, however re-imagined using contemporary (circa 2022) file formats.
 
@@ -92,7 +95,7 @@ There are times when field names are physically too long to center align inside 
           name: Parity Errors
 
         - width: 4
-          name: Interrupt
+          name: Interrupt Waiting
   layout:
     field-name-align: stair-left
 #+end_src
@@ -102,12 +105,6 @@ There are times when field names are physically too long to center align inside 
 The following example CSS file illustrates how to style the output SVG diagrams as shown in this document. They are invoked using the ~-s, --style~ command line options.
 
 #+begin_src css :tangle tests/data/github.css
-  /**
-   regfmt example CSS file
-
-   Copyright © 2022 Charles Y. Choi
-   */
-
   body {
       font-family: Futura, Helvetica, Arial, Verdana;
       font-size: 12pt;
@@ -135,6 +132,7 @@ The following example CSS file illustrates how to style the output SVG diagrams 
       stroke: purple;
   }
 #+end_src
+
 ** Templates
 *regfmt* can help you start writing your configuration files by generating either a ~template.yaml~ or ~template.css~ file you. Use the ~-t~, ~--template~ option with the argument ~yaml~, ~css~, or ~yamlcss~.
 
